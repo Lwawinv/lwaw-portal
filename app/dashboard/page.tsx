@@ -24,8 +24,8 @@ type LoanDetail = {
   current_balance: number; total_interest_paid: number; payments_made: number;
 }
 
-const fmt = (n: number | null | undefined) => n != null ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â'
-const fmtDate = (d: string) => { if (!d) return 'â'; const p = d.split('T')[0].split('-'); return p[1] + '/' + p[2] + '/' + p[0] }
+const fmt = (n: number | null | undefined) => n != null ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Ã¢ÂÂ'
+const fmtDate = (d: string) => { if (!d) return 'Ã¢ÂÂ'; const p = d.split('T')[0].split('-'); return p[1] + '/' + p[2] + '/' + p[0] }
 
 function hashPw(pw: string): string {
   let h = 5381
@@ -36,25 +36,25 @@ function hashPw(pw: string): string {
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const ENTITIES = ['All Entities','A2DSTX, LLC','A2PI, LLC','A2AF2, LLC','A2BH, LLC','A2BA, LLC','A Squared Property Investments, LLC','Equity Trust Company Custodian FBO Arick Wray IRA']
 
-// ââ TODO DATA âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ TODO DATA Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 const TODO_CATEGORIES = [
   { id: 'website', label: 'Website & Portal', accent: '#0ea5e9', items: [
     { id: 105, text: 'Redeploy Vercel from desktop to activate RESEND_API_KEY email notifications', done: false },
     { id: 106, text: "Delete GitHub PAT token 'lwaw-portal-deploy' (security hygiene)", done: false },
     { id: 124, text: 'Add column sorting to Arick admin panel (due date default)', done: false },
     { id: 125, text: 'Delete old URL Redirect Record in Namecheap DNS', done: false },
-    { id: 126, text: "Fix Gladys / 1632 NW 18th â last_name shows as 'contractors'", done: false },
+    { id: 126, text: "Fix Gladys / 1632 NW 18th Ã¢ÂÂ last_name shows as 'contractors'", done: false },
     { id: 107, text: 'Build Brad Dashboard (payments received, overdue, activity, insurance)', done: false },
-    { id: 108, text: 'Email + SMS alerts when Arick posts payment (Resend â code done, needs redeploy)', done: false },
+    { id: 108, text: 'Email + SMS alerts when Arick posts payment (Resend Ã¢ÂÂ code done, needs redeploy)', done: false },
     { id: 109, text: 'Insurance expiration tracker: every policy, days remaining, red/yellow/green status', done: false },
     { id: 110, text: 'Borrower payment history PDF export', done: false },
     { id: 111, text: 'Escrow balance tracker (collected vs. paid out per loan)', done: false },
     { id: 112, text: 'Arick monthly payment summary auto-generator', done: false },
-    { id: 113, text: 'Payoff quote calculator (borrower + date â payoff with per-diem)', done: false },
+    { id: 113, text: 'Payoff quote calculator (borrower + date Ã¢ÂÂ payoff with per-diem)', done: false },
     { id: 114, text: 'Borrower communication log (calls, promises to pay, attorney referrals)', done: false },
   ]},
   { id: 'automation', label: 'Automation Pipeline', accent: '#3b82f6', items: [
-    { id: 1, text: 'Build Gmail â Make.com â Claude â spreadsheet payment pipeline', done: false },
+    { id: 1, text: 'Build Gmail Ã¢ÂÂ Make.com Ã¢ÂÂ Claude Ã¢ÂÂ spreadsheet payment pipeline', done: false },
     { id: 6, text: 'Set up confirmation text/email back to Brad after each update', done: false },
   ]},
   { id: 'insurance', label: 'Insurance', accent: '#f97316', items: [
@@ -162,7 +162,7 @@ export default function DashboardPage() {
       })
       const data = await res.json()
       if (!res.ok) { setModalMsg('Error: ' + (data.error || 'Failed')); return }
-      setModalMsg('â Payment posted!')
+      setModalMsg('Ã¢ÂÂ Payment posted!')
       setTimeout(() => { setModalOpen(false); loadData() }, 1500)
     } catch { setModalMsg('Connection error.') }
     finally { setModalLoading(false) }
@@ -174,7 +174,7 @@ export default function DashboardPage() {
     }))
   }
 
-  // ââ COMPUTED âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂ COMPUTED Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   const now = new Date()
   const monthStart = new Date(year, month, 1).toISOString().split('T')[0]
   const monthEnd = new Date(year, month + 1, 0).toISOString().split('T')[0]
@@ -186,7 +186,7 @@ export default function DashboardPage() {
   const mtdTotal = mtdLogs.reduce((s, p) => s + p.amount, 0)
   const ytdTotal = ytdLogs.reduce((s, p) => s + p.amount, 0)
 
-  // MTD/YTD by entity — with P&I breakdown from payment_history
+  // MTD/YTD by entity â with P&I breakdown from payment_history
   const mtdPayments = allPayments.filter(p => p.payment_date >= monthStart && p.payment_date <= monthEnd)
   const ytdPayments = allPayments.filter(p => p.payment_date >= yearStart && p.payment_date <= yearEnd)
   const mtdPrincipal = mtdPayments.reduce((s, p) => s + (p.principal || 0), 0)
@@ -242,7 +242,7 @@ export default function DashboardPage() {
     return (
       <th onClick={() => { if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortCol(col); setSortDir('asc') } }}
         style={{ padding: '10px 12px', fontSize: 11, textTransform: 'uppercase', color: active ? '#2e6da4' : '#4a5568', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid #dce4ed', whiteSpace: 'nowrap', cursor: 'pointer', background: active ? '#f0f7ff' : '#f0f4f8', userSelect: 'none' }}>
-        {label} {active ? (sortDir === 'asc' ? 'â' : 'â') : ''}
+        {label} {active ? (sortDir === 'asc' ? 'Ã¢ÂÂ' : 'Ã¢ÂÂ') : ''}
       </th>
     )
   }
@@ -257,7 +257,7 @@ export default function DashboardPage() {
     tab: (active: boolean) => ({ padding: '10px 18px', fontSize: 13, fontWeight: 600, color: active ? '#2e6da4' : '#4a5568', cursor: 'pointer', borderBottom: active ? '2px solid #2e6da4' : '2px solid transparent', marginBottom: -2, background: 'none', border: 'none', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: active ? '#2e6da4' : 'transparent', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' as const }),
   }
 
-  // ââ LOGIN SCREEN ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂ LOGIN SCREEN Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   if (screen === 'login') return (
     <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 12, padding: '40px 44px', width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
@@ -266,17 +266,17 @@ export default function DashboardPage() {
           <div><div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: '#f0f6fc', fontWeight: 700 }}>LWAW Investments</div><div style={{ fontSize: 10, color: '#2e6da4', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Staff Dashboard</div></div>
         </div>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: '#f0f6fc', marginBottom: 6 }}>Sign In</h2>
-        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access â authorized staff only</p>
+        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access Ã¢ÂÂ authorized staff only</p>
         {err && <div style={{ background: '#3d1515', color: '#f87171', border: '1px solid #7f1d1d', borderRadius: 5, padding: '10px 14px', fontSize: 13, marginBottom: 16 }}>{err}</div>}
         <div style={{ marginBottom: 14 }}><label style={{ ...s.label, color: '#8b949e' }}>Username</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" autoComplete="off"/></div>
         <div style={{ marginBottom: 20 }}><label style={{ ...s.label, color: '#8b949e' }}>Password</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" onKeyDown={e => e.key === 'Enter' && handleLogin()}/></div>
         <button onClick={handleLogin} disabled={loading} style={{ width: '100%', background: '#2e6da4', color: '#fff', border: 'none', padding: '12px', borderRadius: 6, fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
-        <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>â Back to lwawinv.com</Link></div>
+        <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>Ã¢ÂÂ Back to lwawinv.com</Link></div>
       </div>
     </div>
   )
 
-  // ââ DASHBOARD âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // Ã¢ÂÂÃ¢ÂÂ DASHBOARD Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
   return (
     <div style={{ minHeight: '100vh', background: '#f7f9fc', fontFamily: "'DM Sans', sans-serif" }}>
       {/* NAV */}
@@ -297,14 +297,14 @@ export default function DashboardPage() {
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 2, marginBottom: 24, borderBottom: '2px solid #dce4ed', overflowX: 'auto' }}>
           {[
-            ['overview', 'ð Overview'],
-            ['payments', 'ð³ Payments'],
-            adminUser?.role === 'superadmin' ? ['brad', 'ð¤ Brad View'] : null,
-            ['todo', `â To-Do (${totalDone}/${totalItems})`],
+            ['overview', 'Ã°ÂÂÂ Overview'],
+            ['payments', 'Ã°ÂÂÂ³ Payments'],
+            adminUser?.role === 'superadmin' ? ['brad', 'Ã°ÂÂÂ¤ Brad View'] : null,
+            ['todo', `Ã¢ÂÂ To-Do (${totalDone}/${totalItems})`],
           ].filter(Boolean).map(([id, label]: any) => (
             <button key={id} onClick={() => { setActiveTab(id); setSelectedBorrower(null) }} style={s.tab(activeTab === id)}>{label}</button>
           ))}
-          {selectedBorrower && <button style={s.tab(activeTab === 'drill')}>ð {selectedBorrower.address.split(',')[0]}</button>}
+          {selectedBorrower && <button style={s.tab(activeTab === 'drill')}>Ã°ÂÂÂ {selectedBorrower.address.split(',')[0]}</button>}
         </div>
 
         {/* Month/Year filters */}
@@ -316,7 +316,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ââ OVERVIEW TAB ââ */}
+        {/* Ã¢ÂÂÃ¢ÂÂ OVERVIEW TAB Ã¢ÂÂÃ¢ÂÂ */}
         {activeTab === 'overview' && (
           <>
             {/* Stats row */}
@@ -339,7 +339,7 @@ export default function DashboardPage() {
             {/* MTD/YTD by entity */}
             {entityTotals.length > 0 && (
               <div style={{ ...s.card, marginBottom: 22 }}>
-                <div style={s.label}>Collections by Entity â {MONTHS[month]} {year}</div>
+                <div style={s.label}>Collections by Entity Ã¢ÂÂ {MONTHS[month]} {year}</div>
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead><tr style={{ background: '#f7f9fc' }}>
@@ -381,7 +381,7 @@ export default function DashboardPage() {
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f4f8' }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>{b?.address || p.borrower_id}</div>
-                      <div style={{ fontSize: 11, color: '#4a5568' }}>{fmtDate(p.payment_date)} Â· {p.method} Â· {p.posted_by}</div>
+                      <div style={{ fontSize: 11, color: '#4a5568' }}>{fmtDate(p.payment_date)} ÃÂ· {p.method} ÃÂ· {p.posted_by}</div>
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#15803d' }}>{fmt(p.amount)}</div>
                   </div>
@@ -392,7 +392,7 @@ export default function DashboardPage() {
           </>
         )}
 
-        {/* ââ PAYMENTS TAB ââ */}
+        {/* Ã¢ÂÂÃ¢ÂÂ PAYMENTS TAB Ã¢ÂÂÃ¢ÂÂ */}
         {activeTab === 'payments' && (
           <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ padding: '14px 18px', borderBottom: '1px solid #dce4ed', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -420,12 +420,12 @@ export default function DashboardPage() {
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600, color: '#2e6da4' }}>{b.due_day}</td>
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600 }}>{b.address.split(',')[0]}</td>
                         <td style={{ padding: '9px 12px', fontSize: 12, color: '#4a5568' }}>{b.borrower_name.split(' ').slice(0,2).join(' ')}</td>
-                        <td style={{ padding: '9px 12px', fontSize: 11, color: '#4a5568' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','AÂ²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
+                        <td style={{ padding: '9px 12px', fontSize: 11, color: '#4a5568' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','AÃÂ²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600 }}>{b.payment_amount}</td>
                         <td style={{ padding: '9px 12px' }}>
-                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>â Paid{amount ? ' $' + amount : ''}</span>
-                          : status === 'overdue' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#fff5f5', color: '#b91c1c' }}>â  Overdue</span>
-                          : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f7f9fc', color: '#4a5568' }}>â¢ Unpaid</span>}
+                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>Ã¢ÂÂ Paid{amount ? ' $' + amount : ''}</span>
+                          : status === 'overdue' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#fff5f5', color: '#b91c1c' }}>Ã¢ÂÂ  Overdue</span>
+                          : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f7f9fc', color: '#4a5568' }}>Ã¢ÂÂ¢ Unpaid</span>}
                         </td>
                         <td style={{ padding: '9px 12px' }}>
                           <div style={{ display: 'flex', gap: 6 }}>
@@ -442,10 +442,10 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ââ DRILL DOWN TAB ââ */}
+        {/* Ã¢ÂÂÃ¢ÂÂ DRILL DOWN TAB Ã¢ÂÂÃ¢ÂÂ */}
         {activeTab === 'drill' && selectedBorrower && (
           <div>
-            <button onClick={() => { setActiveTab('payments'); setSelectedBorrower(null) }} style={{ background: 'none', border: 'none', color: '#2e6da4', cursor: 'pointer', fontSize: 13, marginBottom: 16, fontFamily: "'DM Sans', sans-serif", fontWeight: 600 }}>â Back to Payments</button>
+            <button onClick={() => { setActiveTab('payments'); setSelectedBorrower(null) }} style={{ background: 'none', border: 'none', color: '#2e6da4', cursor: 'pointer', fontSize: 13, marginBottom: 16, fontFamily: "'DM Sans', sans-serif", fontWeight: 600 }}>Ã¢ÂÂ Back to Payments</button>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div style={s.card}>
                 <div style={s.label}>Loan Details</div>
@@ -484,13 +484,13 @@ export default function DashboardPage() {
                 <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.entity}</div>
                 <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 6 }}>{selectedBorrower.entity_address}</div>
                 {selectedBorrower.bank_lien && <>
-                  <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.bank_lien.split(' â ')[0]}</div>
-                  <div style={{ fontSize: 11, color: '#4a5568' }}>{selectedBorrower.bank_lien.split(' â ')[1]}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.bank_lien.split(' Ã¢ÂÂ ')[0]}</div>
+                  <div style={{ fontSize: 11, color: '#4a5568' }}>{selectedBorrower.bank_lien.split(' Ã¢ÂÂ ')[1]}</div>
                 </>}
                 <div style={{ marginTop: 12 }}>
                   <div style={s.label}>Escrow</div>
                   <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 10, background: selectedBorrower.escrow === 'taxes_and_insurance' ? '#f0fdf4' : '#fffbeb', color: selectedBorrower.escrow === 'taxes_and_insurance' ? '#15803d' : '#b45309' }}>
-                    {selectedBorrower.escrow === 'taxes_and_insurance' ? 'â Taxes & Insurance Escrowed' : 'â  No Escrow'}
+                    {selectedBorrower.escrow === 'taxes_and_insurance' ? 'Ã¢ÂÂ Taxes & Insurance Escrowed' : 'Ã¢ÂÂ  No Escrow'}
                   </span>
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function DashboardPage() {
                   <tbody>
                     {drillPayments.map((p, i) => (
                       <tr key={p.id} style={{ borderBottom: '1px solid #f0f4f8', background: p.source === 'portal' ? '#f5f3ff' : 'transparent' }}>
-                        <td style={{ padding: '7px 12px', fontSize: 12, color: '#2e6da4' }}>#{p.payment_num || 'â'}</td>
+                        <td style={{ padding: '7px 12px', fontSize: 12, color: '#2e6da4' }}>#{p.payment_num || 'Ã¢ÂÂ'}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmtDate(p.payment_date)}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right', color: '#15803d', fontWeight: 600 }}>{fmt(p.total_paid)}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmt(p.principal)}</td>
@@ -525,7 +525,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ââ TODO TAB ââ */}
+        {/* Ã¢ÂÂÃ¢ÂÂ TODO TAB Ã¢ÂÂÃ¢ÂÂ */}
         {activeTab === 'todo' && (
           <div>
             <div style={{ marginBottom: 16 }}>
@@ -546,7 +546,7 @@ export default function DashboardPage() {
                 {cat.items.map(item => (
                   <div key={item.id} onClick={() => toggleTodo(cat.id, item.id)} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 16px', cursor: 'pointer', borderBottom: '1px solid #f9fafb' }}>
                     <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${item.done ? cat.accent : '#d1d5db'}`, background: item.done ? cat.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                      {item.done && <span style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>â</span>}
+                      {item.done && <span style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>Ã¢ÂÂ</span>}
                     </div>
                     <span style={{ fontSize: 13, color: item.done ? '#9ca3af' : '#1c2026', textDecoration: item.done ? 'line-through' : 'none', lineHeight: 1.5 }}>{item.text}</span>
                   </div>
@@ -556,30 +556,30 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ââ BRAD VIEW TAB ââ */}
+        {/* Ã¢ÂÂÃ¢ÂÂ BRAD VIEW TAB Ã¢ÂÂÃ¢ÂÂ */}
         {activeTab === 'brad' && adminUser?.role === 'superadmin' && (
           <div style={{ ...s.card, textAlign: 'center', padding: '60px 40px' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>ðï¸</div>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>Ã°ÂÂÂÃ¯Â¸Â</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, marginBottom: 8 }}>Brad's Full Dashboard</h3>
-            <p style={{ fontSize: 14, color: '#4a5568', maxWidth: 400, margin: '0 auto' }}>Coming next session â insurance tracker, escrow balances, document storage, payoff calculator, and borrower comms log.</p>
+            <p style={{ fontSize: 14, color: '#4a5568', maxWidth: 400, margin: '0 auto' }}>Coming next session Ã¢ÂÂ insurance tracker, escrow balances, document storage, payoff calculator, and borrower comms log.</p>
           </div>
         )}
       </div>
 
-      {/* ââ POST PAYMENT MODAL ââ */}
+      {/* Ã¢ÂÂÃ¢ÂÂ POST PAYMENT MODAL Ã¢ÂÂÃ¢ÂÂ */}
       {modalOpen && modalBorrower && (
         <div onClick={e => { if (e.target === e.currentTarget) setModalOpen(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: '#fff', borderRadius: 12, padding: '28px 32px', width: '100%', maxWidth: 460, boxShadow: '0 20px 60px rgba(0,0,0,.2)' }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, marginBottom: 4 }}>Post Payment</h3>
             <p style={{ fontSize: 13, color: '#4a5568', marginBottom: 20 }}>{modalBorrower.borrower_name}<br/>{modalBorrower.address}</p>
-            {modalMsg && <div style={{ background: modalMsg.startsWith('â') ? '#f0fdf4' : '#fff5f5', color: modalMsg.startsWith('â') ? '#15803d' : '#b91c1c', border: `1px solid ${modalMsg.startsWith('â') ? '#bbf7d0' : '#fecaca'}`, borderRadius: 5, padding: '8px 12px', fontSize: 13, marginBottom: 14 }}>{modalMsg}</div>}
+            {modalMsg && <div style={{ background: modalMsg.startsWith('Ã¢ÂÂ') ? '#f0fdf4' : '#fff5f5', color: modalMsg.startsWith('Ã¢ÂÂ') ? '#15803d' : '#b91c1c', border: `1px solid ${modalMsg.startsWith('Ã¢ÂÂ') ? '#bbf7d0' : '#fecaca'}`, borderRadius: 5, padding: '8px 12px', fontSize: 13, marginBottom: 14 }}>{modalMsg}</div>}
             <div style={{ marginBottom: 12 }}><label style={s.label}>Amount ($)</label><input style={s.input} type="number" step="0.01" value={modalAmount} onChange={e => setModalAmount(e.target.value)}/></div>
             <div style={{ marginBottom: 12 }}><label style={s.label}>Date</label><input style={s.input} type="date" value={modalDate} onChange={e => setModalDate(e.target.value)}/></div>
             <div style={{ marginBottom: 12 }}><label style={s.label}>Method</label><select style={s.input} value={modalMethod} onChange={e => setModalMethod(e.target.value)}><option>Bank Deposit</option><option>Drop Off</option><option>Online (Equity Trust)</option><option>Other</option></select></div>
             <div style={{ marginBottom: 16 }}><label style={s.label}>Notes</label><textarea style={{ ...s.input, resize: 'vertical', minHeight: 60 }} value={modalNotes} onChange={e => setModalNotes(e.target.value)} placeholder="Optional..."/></div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: '1px solid #dce4ed', color: '#4a5568', padding: '10px 18px', borderRadius: 5, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
-              <button onClick={submitPayment} disabled={modalLoading} style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: modalLoading ? .7 : 1 }}>{modalLoading ? 'Posting...' : 'â Post & Notify Brad'}</button>
+              <button onClick={submitPayment} disabled={modalLoading} style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: modalLoading ? .7 : 1 }}>{modalLoading ? 'Posting...' : 'Ã¢ÂÂ Post & Notify Brad'}</button>
             </div>
           </div>
         </div>
