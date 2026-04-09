@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 type AdminUser = { id: string; username: string; full_name: string; role: string }
@@ -24,8 +24,8 @@ type LoanDetail = {
   current_balance: number; total_interest_paid: number; payments_made: number;
 }
 
-const fmt = (n: number | null | undefined) => n != null ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Ã¢ÂÂ'
-const fmtDate = (d: string) => { if (!d) return 'Ã¢ÂÂ'; const p = d.split('T')[0].split('-'); return p[1] + '/' + p[2] + '/' + p[0] }
+const fmt = (n: number | null | undefined) => n != null ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'
+const fmtDate = (d: string) => { if (!d) return '—'; const p = d.split('T')[0].split('-'); return p[1] + '/' + p[2] + '/' + p[0] }
 
 function hashPw(pw: string): string {
   let h = 5381
@@ -36,25 +36,25 @@ function hashPw(pw: string): string {
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const ENTITIES = ['All Entities','A2DSTX, LLC','A2PI, LLC','A2AF2, LLC','A2BH, LLC','A2BA, LLC','A Squared Property Investments, LLC','Equity Trust Company Custodian FBO Arick Wray IRA']
 
-// Ã¢ÂÂÃ¢ÂÂ TODO DATA Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ── TODO DATA ─────────────────────────────────────────────────────────
 const TODO_CATEGORIES = [
   { id: 'website', label: 'Website & Portal', accent: '#0ea5e9', items: [
     { id: 105, text: 'Redeploy Vercel from desktop to activate RESEND_API_KEY email notifications', done: false },
     { id: 106, text: "Delete GitHub PAT token 'lwaw-portal-deploy' (security hygiene)", done: false },
     { id: 124, text: 'Add column sorting to Arick admin panel (due date default)', done: false },
     { id: 125, text: 'Delete old URL Redirect Record in Namecheap DNS', done: false },
-    { id: 126, text: "Fix Gladys / 1632 NW 18th Ã¢ÂÂ last_name shows as 'contractors'", done: false },
+    { id: 126, text: "Fix Gladys / 1632 NW 18th — last_name shows as 'contractors'", done: false },
     { id: 107, text: 'Build Brad Dashboard (payments received, overdue, activity, insurance)', done: false },
-    { id: 108, text: 'Email + SMS alerts when Arick posts payment (Resend Ã¢ÂÂ code done, needs redeploy)', done: false },
+    { id: 108, text: 'Email + SMS alerts when Arick posts payment (Resend — code done, needs redeploy)', done: false },
     { id: 109, text: 'Insurance expiration tracker: every policy, days remaining, red/yellow/green status', done: false },
     { id: 110, text: 'Borrower payment history PDF export', done: false },
     { id: 111, text: 'Escrow balance tracker (collected vs. paid out per loan)', done: false },
     { id: 112, text: 'Arick monthly payment summary auto-generator', done: false },
-    { id: 113, text: 'Payoff quote calculator (borrower + date Ã¢ÂÂ payoff with per-diem)', done: false },
+    { id: 113, text: 'Payoff quote calculator (borrower + date → payoff with per-diem)', done: false },
     { id: 114, text: 'Borrower communication log (calls, promises to pay, attorney referrals)', done: false },
   ]},
   { id: 'automation', label: 'Automation Pipeline', accent: '#3b82f6', items: [
-    { id: 1, text: 'Build Gmail Ã¢ÂÂ Make.com Ã¢ÂÂ Claude Ã¢ÂÂ spreadsheet payment pipeline', done: false },
+    { id: 1, text: 'Build Gmail → Make.com → Claude → spreadsheet payment pipeline', done: false },
     { id: 6, text: 'Set up confirmation text/email back to Brad after each update', done: false },
   ]},
   { id: 'insurance', label: 'Insurance', accent: '#f97316', items: [
@@ -67,6 +67,118 @@ const TODO_CATEGORIES = [
     { id: 23, text: 'Expedite HOA approval for active seller-finance contract', done: false },
     { id: 24, text: 'Follow up with Evelio Rodriguez on two-month payment offer', done: false },
   ]},
+]
+
+
+
+// ── DASHBOARD AMORTIZATION TABLE ───────────────────────────────────────────
+function DashAmortizationTable({ borrowerId }: { borrowerId: string }) {
+  const [rows, setRows] = React.useState<any[]>([])
+  const [loaded, setLoaded] = React.useState(false)
+  const [showAll, setShowAll] = React.useState(false)
+  const fmt2 = (n: number | null) => n != null ? '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'
+
+  React.useEffect(() => {
+    import('@/lib/supabase').then(({supabase}) => {
+      supabase.from('amortization_schedule').select('*').eq('borrower_id', borrowerId).order('payment_num')
+        .then(({data}) => { if (data) setRows(data); setLoaded(true) })
+    })
+  }, [borrowerId])
+
+  if (!loaded) return <div style={{ padding: '20px', fontSize: 13, color: '#4a5568' }}>Loading...</div>
+  if (rows.length === 0) return (
+    <div style={{ padding: '20px', fontSize: 13, color: '#4a5568', fontStyle: 'italic' }}>
+      Schedule pending — data will be validated and loaded. Mark data as validated to enable.
+    </div>
+  )
+
+  const displayed = showAll ? rows : rows.slice(0, 30)
+  return (
+    <div>
+      <div style={{ overflowX: 'auto', maxHeight: 380, overflowY: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead style={{ position: 'sticky', top: 0 }}>
+            <tr style={{ background: '#f7f9fc' }}>
+              {['#','Date','Total','Principal','Interest','Ending Balance','Status'].map(h => (
+                <th key={h} style={{ padding: '8px 12px', fontSize: 10, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: h==='#'?'center':'right', borderBottom: '1px solid #dce4ed', whiteSpace: 'nowrap' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {displayed.map((r: any) => {
+              const isConf = r.is_confirmed && r.source === 'confirmed'
+              const isSumm = r.is_confirmed && r.source === 'summary'
+              const bg = isConf ? '#f0fdf4' : isSumm ? '#d1fae5' : '#fff'
+              const color = isConf ? '#15803d' : isSumm ? '#065f46' : '#9ca3af'
+              return (
+                <tr key={r.payment_num} style={{ borderBottom: '1px solid #f0f4f8', background: bg }}>
+                  <td style={{ padding: '7px 12px', textAlign: 'center', color: '#2e6da4', fontWeight: 600, fontSize: 12 }}>{r.payment_num}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: 11, color }}>{r.payment_date?.substring(0,10) || '—'}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontSize: 12, fontWeight: r.is_confirmed ? 600 : 400, color }}>{fmt2(r.total_payment)}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontSize: 12, color }}>{fmt2(r.principal)}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontSize: 12, color }}>{fmt2(r.interest)}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontSize: 12, fontWeight: r.is_confirmed ? 700 : 400, color: isConf ? '#15803d' : isSumm ? '#065f46' : '#6b7280' }}>{fmt2(r.ending_balance)}</td>
+                  <td style={{ padding: '7px 12px', textAlign: 'right', fontSize: 11, color }}>
+                    {isConf ? '✓ Confirmed' : isSumm ? '✓ Summary' : 'Projected'}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      {rows.length > 30 && (
+        <div style={{ padding: '10px 18px', borderTop: '1px solid #f0f4f8' }}>
+          <button onClick={() => setShowAll(!showAll)} style={{ background: 'none', border: '1px solid #dce4ed', borderRadius: 5, padding: '6px 14px', fontSize: 12, cursor: 'pointer', color: '#2e6da4', fontFamily: "'DM Sans', sans-serif" }}>
+            {showAll ? `Show Less` : `Show All ${rows.length} Rows`}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── INSURANCE DATA ────────────────────────────────────────────────────────────
+const INSURANCE_DATA = [
+  { address: '821 N Apache', entity: 'A Squared', borrower: 'Carlos Perez', ins_exp: '2024-10-25', days_left: -532, escrow: 'NO', status: 'expired' },
+  { address: '4008 S Tyler', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2024-12-11', days_left: -485, escrow: 'NO', status: 'expired' },
+  { address: '3611 & 3613 SE 13th', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-07-23', days_left: -261, escrow: 'YES', status: 'expired' },
+  { address: '207 Mississippi', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2025-10-01', days_left: -191, escrow: 'NO', status: 'expired' },
+  { address: '609 & 611 N Mirror', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-10-17', days_left: -175, escrow: 'TAX', status: 'expired' },
+  { address: '805 S Louisiana', entity: 'A Squared', borrower: 'Multiple', ins_exp: '2025-11-28', days_left: -133, escrow: 'NO', status: 'expired' },
+  { address: '409 Forest', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-01-08', days_left: -92, escrow: 'NO', status: 'expired' },
+  { address: '1601 Hillcrest', entity: 'A2AF2', borrower: 'Garcia/Deleon', ins_exp: '2026-03-08', days_left: -33, escrow: 'YES', status: 'expired' },
+  { address: '1511 S Woodland', entity: 'A2DSTX', borrower: 'Adriana Colina', ins_exp: '2026-03-11', days_left: -30, escrow: 'NO', status: 'expired' },
+  { address: '404 S Crockett', entity: 'A2BH', borrower: 'Cindy/Sindy', ins_exp: '2026-03-24', days_left: -17, escrow: 'YES', status: 'expired' },
+  { address: '3813 S Hughes', entity: 'A2PI', borrower: 'Brundage', ins_exp: '2026-04-22', days_left: 12, escrow: 'NO', status: 'critical' },
+  { address: '2504 Bivins', entity: 'A2BH', borrower: 'David Flores', ins_exp: '2026-05-05', days_left: 25, escrow: 'YES', status: 'critical' },
+  { address: '3204 Spring', entity: 'A2AF2', borrower: 'Zane Rojas', ins_exp: '2026-05-06', days_left: 26, escrow: 'NO', status: 'critical' },
+  { address: '1903 S Roosevelt', entity: 'A2BH', borrower: 'Ochoa Enterprises', ins_exp: '2026-05-06', days_left: 26, escrow: 'NO', status: 'critical' },
+  { address: '4433 Fannin', entity: 'A2BH', borrower: 'Ochoa Enterprises', ins_exp: '2026-05-06', days_left: 26, escrow: 'NO', status: 'critical' },
+  { address: '3702 S Monroe', entity: 'A2DSTX', borrower: 'Synthia Henderson', ins_exp: '2026-05-17', days_left: 37, escrow: 'NO', status: 'warning' },
+  { address: '4109 S Polk', entity: 'A Squared', borrower: 'Jordan Rentals', ins_exp: '2026-06-02', days_left: 53, escrow: 'NO', status: 'warning' },
+  { address: '1410 S Ong/4012 Gables', entity: 'A2BA', borrower: 'LLC', ins_exp: '2026-06-02', days_left: 53, escrow: 'NO', status: 'warning' },
+  { address: '4214 SW 38th', entity: 'A2PI', borrower: 'Juan San Martin', ins_exp: '2026-07-06', days_left: 87, escrow: 'YES', status: 'warning' },
+  { address: '700 N Houston', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-07-11', days_left: 92, escrow: 'NO', status: 'ok' },
+  { address: '1937 S Roosevelt', entity: 'A2PI', borrower: 'Jesus Macias', ins_exp: '2026-08-05', days_left: 117, escrow: 'YES', status: 'ok' },
+  { address: '1908 Seminole', entity: 'A2BA', borrower: 'Borrower', ins_exp: '2026-08-08', days_left: 120, escrow: 'YES', status: 'ok' },
+  { address: '3311 NE 20th', entity: 'A2PI', borrower: 'Pascual Sanchez', ins_exp: '2026-08-12', days_left: 124, escrow: 'YES', status: 'ok' },
+  { address: '1920 Manhattan', entity: 'A2BH', borrower: 'Lidice', ins_exp: '2026-09-04', days_left: 147, escrow: 'YES', status: 'ok' },
+  { address: '2602 Olive', entity: 'A2BA', borrower: 'Zachary Lopez', ins_exp: '2026-09-11', days_left: 154, escrow: 'NO', status: 'ok' },
+  { address: '3309 NE 20th', entity: 'A2BH', borrower: 'Perla Terrazas', ins_exp: '2026-09-20', days_left: 163, escrow: 'YES', status: 'ok' },
+  { address: '4312 Bonham', entity: 'A2BA', borrower: 'Leyva/Sarmiento', ins_exp: '2026-10-09', days_left: 182, escrow: 'YES', status: 'ok' },
+  { address: '11403 Palermo', entity: 'A2PI', borrower: 'Yusdel Rivero', ins_exp: '2026-10-22', days_left: 195, escrow: 'NO', status: 'ok' },
+  { address: '315 SW 29th', entity: 'A2PI', borrower: 'Evelyn Aviles', ins_exp: '2026-10-23', days_left: 196, escrow: 'NO', status: 'ok' },
+  { address: '4209 S Polk + 3', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2026-11-05', days_left: 209, escrow: 'NO', status: 'ok' },
+  { address: '1408 Heather', entity: 'A2BH', borrower: 'Multiple', ins_exp: '2026-11-22', days_left: 226, escrow: 'YES', status: 'ok' },
+  { address: '4207 Harmony', entity: 'A2PI', borrower: 'Rafaela Asencio', ins_exp: '2026-11-26', days_left: 230, escrow: 'NO', status: 'ok' },
+  { address: '3612 Atkinsen', entity: 'A2PI', borrower: 'Maria Mancinas', ins_exp: '2026-12-07', days_left: 241, escrow: 'NO', status: 'ok' },
+  { address: '600 Houston', entity: 'A2DSTX', borrower: 'Luis Lancho', ins_exp: '2027-01-06', days_left: 271, escrow: 'NO', status: 'ok' },
+  { address: '1632 NW 18th', entity: 'IRA', borrower: 'Gladys', ins_exp: '2027-01-11', days_left: 276, escrow: 'NO', status: 'ok' },
+  { address: '1933 S Highland', entity: 'A2BH', borrower: 'Ochoa Enterprises', ins_exp: '2027-01-25', days_left: 290, escrow: 'YES', status: 'ok' },
+  { address: '1508 N Washington', entity: 'A2BH', borrower: 'Ochoa Enterprises', ins_exp: '2027-01-25', days_left: 290, escrow: 'YES', status: 'ok' },
+  { address: '209 Louisiana +4', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2027-01-26', days_left: 291, escrow: 'NO', status: 'ok' },
+  { address: '4326 & 4328 S Polk', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2027-01-26', days_left: 291, escrow: 'NO', status: 'ok' },
 ]
 
 export default function DashboardPage() {
@@ -162,7 +274,7 @@ export default function DashboardPage() {
       })
       const data = await res.json()
       if (!res.ok) { setModalMsg('Error: ' + (data.error || 'Failed')); return }
-      setModalMsg('Ã¢ÂÂ Payment posted!')
+      setModalMsg('✓ Payment posted!')
       setTimeout(() => { setModalOpen(false); loadData() }, 1500)
     } catch { setModalMsg('Connection error.') }
     finally { setModalLoading(false) }
@@ -174,7 +286,7 @@ export default function DashboardPage() {
     }))
   }
 
-  // Ã¢ÂÂÃ¢ÂÂ COMPUTED Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+  // ── COMPUTED ─────────────────────────────────────────────────────────
   const now = new Date()
   const monthStart = new Date(year, month, 1).toISOString().split('T')[0]
   const monthEnd = new Date(year, month + 1, 0).toISOString().split('T')[0]
@@ -186,9 +298,11 @@ export default function DashboardPage() {
   const mtdTotal = mtdLogs.reduce((s, p) => s + p.amount, 0)
   const ytdTotal = ytdLogs.reduce((s, p) => s + p.amount, 0)
 
-  // MTD/YTD by entity â with P&I breakdown from payment_history
+  // MTD/YTD by entity — with P&I breakdown from payment_history
   const mtdPayments = allPayments.filter(p => p.payment_date >= monthStart && p.payment_date <= monthEnd)
   const ytdPayments = allPayments.filter(p => p.payment_date >= yearStart && p.payment_date <= yearEnd)
+
+  // Overall P&I totals
   const mtdPrincipal = mtdPayments.reduce((s, p) => s + (p.principal || 0), 0)
   const mtdInterest = mtdPayments.reduce((s, p) => s + (p.interest || 0), 0)
   const ytdPrincipal = ytdPayments.reduce((s, p) => s + (p.principal || 0), 0)
@@ -198,7 +312,7 @@ export default function DashboardPage() {
     const entityBorrowers = borrowers.filter(b => b.entity === entity).map(b => b.id)
     const mtd = mtdLogs.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + p.amount, 0)
     const ytd = ytdLogs.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + p.amount, 0)
-        const mtdP = mtdPayments.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + (p.principal || 0), 0)
+    const mtdP = mtdPayments.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + (p.principal || 0), 0)
     const mtdI = mtdPayments.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + (p.interest || 0), 0)
     const ytdP = ytdPayments.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + (p.principal || 0), 0)
     const ytdI = ytdPayments.filter(p => entityBorrowers.includes(p.borrower_id)).reduce((s, p) => s + (p.interest || 0), 0)
@@ -242,7 +356,7 @@ export default function DashboardPage() {
     return (
       <th onClick={() => { if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortCol(col); setSortDir('asc') } }}
         style={{ padding: '10px 12px', fontSize: 11, textTransform: 'uppercase', color: active ? '#2e6da4' : '#4a5568', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid #dce4ed', whiteSpace: 'nowrap', cursor: 'pointer', background: active ? '#f0f7ff' : '#f0f4f8', userSelect: 'none' }}>
-        {label} {active ? (sortDir === 'asc' ? 'Ã¢ÂÂ' : 'Ã¢ÂÂ') : ''}
+        {label} {active ? (sortDir === 'asc' ? '↑' : '↓') : ''}
       </th>
     )
   }
@@ -257,7 +371,7 @@ export default function DashboardPage() {
     tab: (active: boolean) => ({ padding: '10px 18px', fontSize: 13, fontWeight: 600, color: active ? '#2e6da4' : '#4a5568', cursor: 'pointer', borderBottom: active ? '2px solid #2e6da4' : '2px solid transparent', marginBottom: -2, background: 'none', border: 'none', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: active ? '#2e6da4' : 'transparent', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' as const }),
   }
 
-  // Ã¢ÂÂÃ¢ÂÂ LOGIN SCREEN Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+  // ── LOGIN SCREEN ──────────────────────────────────────────────────────
   if (screen === 'login') return (
     <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 12, padding: '40px 44px', width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
@@ -266,17 +380,17 @@ export default function DashboardPage() {
           <div><div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: '#f0f6fc', fontWeight: 700 }}>LWAW Investments</div><div style={{ fontSize: 10, color: '#2e6da4', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Staff Dashboard</div></div>
         </div>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: '#f0f6fc', marginBottom: 6 }}>Sign In</h2>
-        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access Ã¢ÂÂ authorized staff only</p>
+        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access — authorized staff only</p>
         {err && <div style={{ background: '#3d1515', color: '#f87171', border: '1px solid #7f1d1d', borderRadius: 5, padding: '10px 14px', fontSize: 13, marginBottom: 16 }}>{err}</div>}
         <div style={{ marginBottom: 14 }}><label style={{ ...s.label, color: '#8b949e' }}>Username</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" autoComplete="off"/></div>
         <div style={{ marginBottom: 20 }}><label style={{ ...s.label, color: '#8b949e' }}>Password</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" onKeyDown={e => e.key === 'Enter' && handleLogin()}/></div>
         <button onClick={handleLogin} disabled={loading} style={{ width: '100%', background: '#2e6da4', color: '#fff', border: 'none', padding: '12px', borderRadius: 6, fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
-        <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>Ã¢ÂÂ Back to lwawinv.com</Link></div>
+        <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>← Back to lwawinv.com</Link></div>
       </div>
     </div>
   )
 
-  // Ã¢ÂÂÃ¢ÂÂ DASHBOARD Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+  // ── DASHBOARD ─────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: '100vh', background: '#f7f9fc', fontFamily: "'DM Sans', sans-serif" }}>
       {/* NAV */}
@@ -297,14 +411,15 @@ export default function DashboardPage() {
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 2, marginBottom: 24, borderBottom: '2px solid #dce4ed', overflowX: 'auto' }}>
           {[
-            ['overview', 'Ã°ÂÂÂ Overview'],
-            ['payments', 'Ã°ÂÂÂ³ Payments'],
-            adminUser?.role === 'superadmin' ? ['brad', 'Ã°ÂÂÂ¤ Brad View'] : null,
-            ['todo', `Ã¢ÂÂ To-Do (${totalDone}/${totalItems})`],
+            ['overview', 'Overview'],
+            ['payments', 'Payments'],
+            adminUser?.role === 'superadmin' ? ['brad', 'Brad View'] : null,
+            adminUser?.role === 'superadmin' ? ['insurance', 'Insurance'] : null,
+            adminUser?.role === 'superadmin' ? ['todo', `To-Do (${totalDone}/${totalItems})`] : null,
           ].filter(Boolean).map(([id, label]: any) => (
             <button key={id} onClick={() => { setActiveTab(id); setSelectedBorrower(null) }} style={s.tab(activeTab === id)}>{label}</button>
           ))}
-          {selectedBorrower && <button style={s.tab(activeTab === 'drill')}>Ã°ÂÂÂ {selectedBorrower.address.split(',')[0]}</button>}
+          {selectedBorrower && <button style={s.tab(activeTab === 'drill')}>🔍 {selectedBorrower.address.split(',')[0]}</button>}
         </div>
 
         {/* Month/Year filters */}
@@ -316,7 +431,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Ã¢ÂÂÃ¢ÂÂ OVERVIEW TAB Ã¢ÂÂÃ¢ÂÂ */}
+        {/* ── OVERVIEW TAB ── */}
         {activeTab === 'overview' && (
           <>
             {/* Stats row */}
@@ -339,7 +454,7 @@ export default function DashboardPage() {
             {/* MTD/YTD by entity */}
             {entityTotals.length > 0 && (
               <div style={{ ...s.card, marginBottom: 22 }}>
-                <div style={s.label}>Collections by Entity Ã¢ÂÂ {MONTHS[month]} {year}</div>
+                <div style={s.label}>Collections by Entity — {MONTHS[month]} {year}</div>
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead><tr style={{ background: '#f7f9fc' }}>
@@ -381,7 +496,7 @@ export default function DashboardPage() {
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f4f8' }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>{b?.address || p.borrower_id}</div>
-                      <div style={{ fontSize: 11, color: '#4a5568' }}>{fmtDate(p.payment_date)} ÃÂ· {p.method} ÃÂ· {p.posted_by}</div>
+                      <div style={{ fontSize: 11, color: '#4a5568' }}>{fmtDate(p.payment_date)} · {p.method} · {p.posted_by}</div>
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#15803d' }}>{fmt(p.amount)}</div>
                   </div>
@@ -392,7 +507,7 @@ export default function DashboardPage() {
           </>
         )}
 
-        {/* Ã¢ÂÂÃ¢ÂÂ PAYMENTS TAB Ã¢ÂÂÃ¢ÂÂ */}
+        {/* ── PAYMENTS TAB ── */}
         {activeTab === 'payments' && (
           <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ padding: '14px 18px', borderBottom: '1px solid #dce4ed', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -420,12 +535,12 @@ export default function DashboardPage() {
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600, color: '#2e6da4' }}>{b.due_day}</td>
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600 }}>{b.address.split(',')[0]}</td>
                         <td style={{ padding: '9px 12px', fontSize: 12, color: '#4a5568' }}>{b.borrower_name.split(' ').slice(0,2).join(' ')}</td>
-                        <td style={{ padding: '9px 12px', fontSize: 11, color: '#4a5568' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','AÃÂ²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
+                        <td style={{ padding: '9px 12px', fontSize: 11, color: '#4a5568' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','A²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600 }}>{b.payment_amount}</td>
                         <td style={{ padding: '9px 12px' }}>
-                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>Ã¢ÂÂ Paid{amount ? ' $' + amount : ''}</span>
-                          : status === 'overdue' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#fff5f5', color: '#b91c1c' }}>Ã¢ÂÂ  Overdue</span>
-                          : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f7f9fc', color: '#4a5568' }}>Ã¢ÂÂ¢ Unpaid</span>}
+                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>✓ Paid{amount ? ' $' + amount : ''}</span>
+                          : status === 'overdue' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#fff5f5', color: '#b91c1c' }}>⚠ Overdue</span>
+                          : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f7f9fc', color: '#4a5568' }}>• Unpaid</span>}
                         </td>
                         <td style={{ padding: '9px 12px' }}>
                           <div style={{ display: 'flex', gap: 6 }}>
@@ -442,10 +557,9 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Ã¢ÂÂÃ¢ÂÂ DRILL DOWN TAB Ã¢ÂÂÃ¢ÂÂ */}
+        {/* ── DRILL DOWN TAB ── */}
         {activeTab === 'drill' && selectedBorrower && (
           <div>
-            <button onClick={() => { setActiveTab('payments'); setSelectedBorrower(null) }} style={{ background: 'none', border: 'none', color: '#2e6da4', cursor: 'pointer', fontSize: 13, marginBottom: 16, fontFamily: "'DM Sans', sans-serif", fontWeight: 600 }}>Ã¢ÂÂ Back to Payments</button>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div style={s.card}>
                 <div style={s.label}>Loan Details</div>
@@ -484,13 +598,13 @@ export default function DashboardPage() {
                 <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.entity}</div>
                 <div style={{ fontSize: 11, color: '#4a5568', marginBottom: 6 }}>{selectedBorrower.entity_address}</div>
                 {selectedBorrower.bank_lien && <>
-                  <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.bank_lien.split(' Ã¢ÂÂ ')[0]}</div>
-                  <div style={{ fontSize: 11, color: '#4a5568' }}>{selectedBorrower.bank_lien.split(' Ã¢ÂÂ ')[1]}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedBorrower.bank_lien.split(' — ')[0]}</div>
+                  <div style={{ fontSize: 11, color: '#4a5568' }}>{selectedBorrower.bank_lien.split(' — ')[1]}</div>
                 </>}
                 <div style={{ marginTop: 12 }}>
                   <div style={s.label}>Escrow</div>
                   <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 10, background: selectedBorrower.escrow === 'taxes_and_insurance' ? '#f0fdf4' : '#fffbeb', color: selectedBorrower.escrow === 'taxes_and_insurance' ? '#15803d' : '#b45309' }}>
-                    {selectedBorrower.escrow === 'taxes_and_insurance' ? 'Ã¢ÂÂ Taxes & Insurance Escrowed' : 'Ã¢ÂÂ  No Escrow'}
+                    {selectedBorrower.escrow === 'taxes_and_insurance' ? '✓ Taxes & Insurance Escrowed' : '⚠ No Escrow'}
                   </span>
                 </div>
               </div>
@@ -509,7 +623,7 @@ export default function DashboardPage() {
                   <tbody>
                     {drillPayments.map((p, i) => (
                       <tr key={p.id} style={{ borderBottom: '1px solid #f0f4f8', background: p.source === 'portal' ? '#f5f3ff' : 'transparent' }}>
-                        <td style={{ padding: '7px 12px', fontSize: 12, color: '#2e6da4' }}>#{p.payment_num || 'Ã¢ÂÂ'}</td>
+                        <td style={{ padding: '7px 12px', fontSize: 12, color: '#2e6da4' }}>#{p.payment_num || '—'}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmtDate(p.payment_date)}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right', color: '#15803d', fontWeight: 600 }}>{fmt(p.total_paid)}</td>
                         <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmt(p.principal)}</td>
@@ -522,10 +636,23 @@ export default function DashboardPage() {
                 </table>
               </div>
             </div>
+
+            {/* Amortization Schedule in drill view */}
+            <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden', marginTop: 16 }}>
+              <div style={{ padding: '12px 18px', borderBottom: '1px solid #dce4ed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Amortization Schedule</h4>
+                <span style={{ fontSize: 12, color: '#4a5568' }}>
+                  <span style={{ display: 'inline-block', width: 10, height: 10, background: '#92D050', borderRadius: 2, marginRight: 4 }}></span>Confirmed
+                  <span style={{ display: 'inline-block', width: 10, height: 10, background: '#D1FAE5', borderRadius: 2, marginLeft: 10, marginRight: 4 }}></span>Summary
+                  <span style={{ display: 'inline-block', width: 10, height: 10, background: '#F7F9FC', border: '1px solid #dce4ed', borderRadius: 2, marginLeft: 10, marginRight: 4 }}></span>Projected
+                </span>
+              </div>
+              <DashAmortizationTable borrowerId={selectedBorrower.id} />
+            </div>
           </div>
         )}
 
-        {/* Ã¢ÂÂÃ¢ÂÂ TODO TAB Ã¢ÂÂÃ¢ÂÂ */}
+        {/* ── TODO TAB ── */}
         {activeTab === 'todo' && (
           <div>
             <div style={{ marginBottom: 16 }}>
@@ -546,7 +673,7 @@ export default function DashboardPage() {
                 {cat.items.map(item => (
                   <div key={item.id} onClick={() => toggleTodo(cat.id, item.id)} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 16px', cursor: 'pointer', borderBottom: '1px solid #f9fafb' }}>
                     <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${item.done ? cat.accent : '#d1d5db'}`, background: item.done ? cat.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                      {item.done && <span style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>Ã¢ÂÂ</span>}
+                      {item.done && <span style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>✓</span>}
                     </div>
                     <span style={{ fontSize: 13, color: item.done ? '#9ca3af' : '#1c2026', textDecoration: item.done ? 'line-through' : 'none', lineHeight: 1.5 }}>{item.text}</span>
                   </div>
@@ -556,30 +683,95 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Ã¢ÂÂÃ¢ÂÂ BRAD VIEW TAB Ã¢ÂÂÃ¢ÂÂ */}
+        {/* ── INSURANCE TRACKER TAB ── */}
+        {activeTab === 'insurance' && adminUser?.role === 'superadmin' && (
+          <div>
+            {/* Summary stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: 22 }}>
+              {[
+                { label: 'Expired', val: INSURANCE_DATA.filter(d => d.status === 'expired').length, color: '#b91c1c', bg: '#fff5f5' },
+                { label: 'Critical (< 30d)', val: INSURANCE_DATA.filter(d => d.status === 'critical').length, color: '#b45309', bg: '#fffbeb' },
+                { label: 'Warning (< 90d)', val: INSURANCE_DATA.filter(d => d.status === 'warning').length, color: '#1d4ed8', bg: '#eff6ff' },
+                { label: 'Current', val: INSURANCE_DATA.filter(d => d.status === 'ok').length, color: '#15803d', bg: '#f0fdf4' },
+                { label: 'Total Tracked', val: INSURANCE_DATA.length, color: '#1c2026', bg: '#f7f9fc' },
+              ].map((stat, i) => (
+                <div key={i} style={{ background: stat.bg, border: '1px solid #dce4ed', borderRadius: 8, padding: '14px 18px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, marginBottom: 6 }}>{stat.label}</div>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: stat.color }}>{stat.val}</div>
+                </div>
+              ))}
+            </div>
+            {/* Table */}
+            <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid #dce4ed', background: '#f7f9fc' }}>
+                <span style={{ fontWeight: 700, fontSize: 15 }}>Insurance Expiration Tracker</span>
+                <span style={{ fontSize: 12, color: '#4a5568', marginLeft: 12 }}>Updated from Note Tracking sheet · {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: '#f0f4f8' }}>
+                      {['Property', 'Borrower', 'Entity', 'Expires', 'Days Left', 'Escrow', 'Status'].map(h => (
+                        <th key={h} style={{ padding: '10px 14px', fontSize: 11, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid #dce4ed', whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {INSURANCE_DATA.map((item, i) => {
+                      const statusStyles: Record<string, { bg: string; color: string; label: string }> = {
+                        expired:  { bg: '#fff5f5', color: '#b91c1c', label: 'EXPIRED' },
+                        critical: { bg: '#fffbeb', color: '#b45309', label: 'CRITICAL' },
+                        warning:  { bg: '#eff6ff', color: '#1d4ed8', label: 'WARNING' },
+                        ok:       { bg: 'transparent', color: '#15803d', label: 'OK' },
+                      }
+                      const ss = statusStyles[item.status] || statusStyles.ok
+                      return (
+                        <tr key={i} style={{ borderBottom: '1px solid #f0f4f8', background: ss.bg }}>
+                          <td style={{ padding: '9px 14px', fontWeight: 600, fontSize: 13 }}>{item.address}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 12, color: '#4a5568' }}>{item.borrower.split(' ').slice(0, 2).join(' ')}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 11, color: '#4a5568' }}>{item.entity.replace(', LLC', '').replace('A Squared Property Investments', 'A Squared')}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 13, fontFamily: 'monospace' }}>{item.ins_exp}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 13, textAlign: 'center', fontWeight: 700, color: ss.color }}>{item.days_left}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 11, textAlign: 'center' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: item.escrow === 'YES' ? '#f0fdf4' : '#f7f9fc', color: item.escrow === 'YES' ? '#15803d' : '#4a5568' }}>{item.escrow}</span>
+                          </td>
+                          <td style={{ padding: '9px 14px' }}>
+                            <span style={{ padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700, background: ss.bg, color: ss.color, border: `1px solid ${ss.color}33` }}>{ss.label}</span>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+                {/* ── BRAD VIEW TAB ── */}
         {activeTab === 'brad' && adminUser?.role === 'superadmin' && (
           <div style={{ ...s.card, textAlign: 'center', padding: '60px 40px' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>Ã°ÂÂÂÃ¯Â¸Â</div>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🏗️</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, marginBottom: 8 }}>Brad's Full Dashboard</h3>
-            <p style={{ fontSize: 14, color: '#4a5568', maxWidth: 400, margin: '0 auto' }}>Coming next session Ã¢ÂÂ insurance tracker, escrow balances, document storage, payoff calculator, and borrower comms log.</p>
+            <p style={{ fontSize: 14, color: '#4a5568', maxWidth: 400, margin: '0 auto' }}>Coming next session — insurance tracker, escrow balances, document storage, payoff calculator, and borrower comms log.</p>
           </div>
         )}
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ POST PAYMENT MODAL Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── POST PAYMENT MODAL ── */}
       {modalOpen && modalBorrower && (
         <div onClick={e => { if (e.target === e.currentTarget) setModalOpen(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: '#fff', borderRadius: 12, padding: '28px 32px', width: '100%', maxWidth: 460, boxShadow: '0 20px 60px rgba(0,0,0,.2)' }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, marginBottom: 4 }}>Post Payment</h3>
             <p style={{ fontSize: 13, color: '#4a5568', marginBottom: 20 }}>{modalBorrower.borrower_name}<br/>{modalBorrower.address}</p>
-            {modalMsg && <div style={{ background: modalMsg.startsWith('Ã¢ÂÂ') ? '#f0fdf4' : '#fff5f5', color: modalMsg.startsWith('Ã¢ÂÂ') ? '#15803d' : '#b91c1c', border: `1px solid ${modalMsg.startsWith('Ã¢ÂÂ') ? '#bbf7d0' : '#fecaca'}`, borderRadius: 5, padding: '8px 12px', fontSize: 13, marginBottom: 14 }}>{modalMsg}</div>}
+            {modalMsg && <div style={{ background: modalMsg.startsWith('✓') ? '#f0fdf4' : '#fff5f5', color: modalMsg.startsWith('✓') ? '#15803d' : '#b91c1c', border: `1px solid ${modalMsg.startsWith('✓') ? '#bbf7d0' : '#fecaca'}`, borderRadius: 5, padding: '8px 12px', fontSize: 13, marginBottom: 14 }}>{modalMsg}</div>}
             <div style={{ marginBottom: 12 }}><label style={s.label}>Amount ($)</label><input style={s.input} type="number" step="0.01" value={modalAmount} onChange={e => setModalAmount(e.target.value)}/></div>
             <div style={{ marginBottom: 12 }}><label style={s.label}>Date</label><input style={s.input} type="date" value={modalDate} onChange={e => setModalDate(e.target.value)}/></div>
             <div style={{ marginBottom: 12 }}><label style={s.label}>Method</label><select style={s.input} value={modalMethod} onChange={e => setModalMethod(e.target.value)}><option>Bank Deposit</option><option>Drop Off</option><option>Online (Equity Trust)</option><option>Other</option></select></div>
             <div style={{ marginBottom: 16 }}><label style={s.label}>Notes</label><textarea style={{ ...s.input, resize: 'vertical', minHeight: 60 }} value={modalNotes} onChange={e => setModalNotes(e.target.value)} placeholder="Optional..."/></div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: '1px solid #dce4ed', color: '#4a5568', padding: '10px 18px', borderRadius: 5, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
-              <button onClick={submitPayment} disabled={modalLoading} style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: modalLoading ? .7 : 1 }}>{modalLoading ? 'Posting...' : 'Ã¢ÂÂ Post & Notify Brad'}</button>
+              <button onClick={submitPayment} disabled={modalLoading} style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: modalLoading ? .7 : 1 }}>{modalLoading ? 'Posting...' : '✓ Post & Notify Brad'}</button>
             </div>
           </div>
         </div>
