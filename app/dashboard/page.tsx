@@ -391,7 +391,9 @@ export default function DashboardPage() {
   const amortYTDTotal     = amortYTD.reduce((s, r) => s + (r.total_payment || 0), 0)
 
   // Escrow entity totals
-  const escrowEntities = [...new Set(ESCROW_DATA.map(e => e.entity))]
+  const escrowEntitySet: Record<string, boolean> = {}
+  ESCROW_DATA.forEach(e => { escrowEntitySet[e.entity] = true })
+  const escrowEntities = Object.keys(escrowEntitySet)
   const escrowByEntity = escrowEntities.map(entity => {
     const props = ESCROW_DATA.filter(e => e.entity === entity)
     const totalBal = props.reduce((s, p) => s + (p.balance || 0), 0)
