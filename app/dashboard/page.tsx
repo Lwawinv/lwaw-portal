@@ -245,20 +245,6 @@ export default function DashboardPage() {
   const [nlBank, setNlBank] = useState('')
   const [nlAcct, setNlAcct] = useState('')
   const [nlMsg, setNlMsg] = useState('')
-
-  // New Loan modal state (Brad only)
-  const [newLoanOpen, setNewLoanOpen] = useState(false)
-  const [nlAddress, setNlAddress] = useState('')
-  const [nlBorrower, setNlBorrower] = useState('')
-  const [nlEntity, setNlEntity] = useState('A Squared Property Investments, LLC')
-  const [nlAmount, setNlAmount] = useState('')
-  const [nlRate, setNlRate] = useState('')
-  const [nlTerm, setNlTerm] = useState('30')
-  const [nlStart, setNlStart] = useState(new Date().toISOString().split('T')[0])
-  const [nlEscrow, setNlEscrow] = useState('none')
-  const [nlBank, setNlBank] = useState('')
-  const [nlAcct, setNlAcct] = useState('')
-  const [nlMsg, setNlMsg] = useState('')
   const [nlLoading, setNlLoading] = useState(false)
 
   // Todo
