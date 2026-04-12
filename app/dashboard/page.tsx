@@ -381,23 +381,25 @@ export default function DashboardPage() {
   }
 
   // ── LOGIN SCREEN ──────────────────────────────────────────────────────
-  if (screen === 'login') return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif" }}>
-      <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 12, padding: '40px 44px', width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-          <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="22" width="7" height="14" rx="1" fill="#f0f6fc"/><rect x="14" y="15" width="7" height="21" rx="1" fill="#f0f6fc"/><rect x="24" y="7" width="7" height="29" rx="1" fill="#f0f6fc"/><path d="M6 28 Q20 10 34 8" stroke="#2e6da4" strokeWidth="2.5" fill="none" strokeLinecap="round"/><polygon points="34,4 38,10 30,10" fill="#2e6da4"/></svg>
-          <div><div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: '#f0f6fc', fontWeight: 700 }}>LWAW Investments</div><div style={{ fontSize: 10, color: '#2e6da4', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Staff Dashboard</div></div>
+  if (screen === 'login') {
+      return (
+      <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif" }}>
+        <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 12, padding: '40px 44px', width: '100%', maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,.5)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="22" width="7" height="14" rx="1" fill="#f0f6fc"/><rect x="14" y="15" width="7" height="21" rx="1" fill="#f0f6fc"/><rect x="24" y="7" width="7" height="29" rx="1" fill="#f0f6fc"/><path d="M6 28 Q20 10 34 8" stroke="#2e6da4" strokeWidth="2.5" fill="none" strokeLinecap="round"/><polygon points="34,4 38,10 30,10" fill="#2e6da4"/></svg>
+            <div><div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: '#f0f6fc', fontWeight: 700 }}>LWAW Investments</div><div style={{ fontSize: 10, color: '#2e6da4', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Staff Dashboard</div></div>
+          </div>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: '#f0f6fc', marginBottom: 6 }}>Sign In</h2>
+          <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access — authorized staff only</p>
+          {err && <div style={{ background: '#3d1515', color: '#f87171', border: '1px solid #7f1d1d', borderRadius: 5, padding: '10px 14px', fontSize: 13, marginBottom: 16 }}>{err}</div>}
+          <div style={{ marginBottom: 14 }}><label style={{ ...s.label, color: '#8b949e' }}>Username</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" autoComplete="off"/></div>
+          <div style={{ marginBottom: 20 }}><label style={{ ...s.label, color: '#8b949e' }}>Password</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" onKeyDown={e => e.key === 'Enter' && handleLogin()}/></div>
+          <button onClick={handleLogin} disabled={loading} style={{ width: '100%', background: '#2e6da4', color: '#fff', border: 'none', padding: '12px', borderRadius: 6, fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
+          <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>← Back to lwawinv.com</Link></div>
         </div>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: '#f0f6fc', marginBottom: 6 }}>Sign In</h2>
-        <p style={{ fontSize: 13, color: '#8b949e', marginBottom: 24 }}>Restricted access — authorized staff only</p>
-        {err && <div style={{ background: '#3d1515', color: '#f87171', border: '1px solid #7f1d1d', borderRadius: 5, padding: '10px 14px', fontSize: 13, marginBottom: 16 }}>{err}</div>}
-        <div style={{ marginBottom: 14 }}><label style={{ ...s.label, color: '#8b949e' }}>Username</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" autoComplete="off"/></div>
-        <div style={{ marginBottom: 20 }}><label style={{ ...s.label, color: '#8b949e' }}>Password</label><input style={{ ...s.input, background: '#0d1117', border: '1px solid #30363d', color: '#f0f6fc' }} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" onKeyDown={e => e.key === 'Enter' && handleLogin()}/></div>
-        <button onClick={handleLogin} disabled={loading} style={{ width: '100%', background: '#2e6da4', color: '#fff', border: 'none', padding: '12px', borderRadius: 6, fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
-        <div style={{ marginTop: 20, textAlign: 'center' }}><Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>← Back to lwawinv.com</Link></div>
       </div>
-    </div>
-  )
+      )
+  }
 
   // ── DASHBOARD ─────────────────────────────────────────────────────────
   return (
