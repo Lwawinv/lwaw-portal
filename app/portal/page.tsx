@@ -416,33 +416,13 @@ export default function PortalPage() {
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, marginBottom: 6 }}>Portal Login</h2>
             <p style={{ fontSize: 14, color: '#4a5568', marginBottom: 24, fontWeight: 300 }}>Sign in to access your loan information and payment history.</p>
 
-            {/* Toggle */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-              {(['borrower', 'admin'] as const).map(t => (
-                <button key={t} onClick={() => { setLoginType(t); setErr('') }}
-                  style={{ flex: 1, padding: 9, borderRadius: 6, border: '1px solid', borderColor: loginType === t ? '#2e6da4' : '#dce4ed', background: loginType === t ? '#2e6da4' : '#fff', color: loginType === t ? '#fff' : '#4a5568', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                  {t === 'borrower' ? '🏠 Borrower Login' : '🔐 Property Manager'}
-                </button>
-              ))}
-            </div>
-
             {err && <div style={s.errMsg}>{err}</div>}
 
-            {loginType === 'borrower' ? (
-              <>
-                <div style={{ marginBottom: 16 }}><label style={s.label}>Last Name</label><input style={s.input} value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name on your loan" autoComplete="off"/></div>
-                <div style={{ marginBottom: 16 }}><label style={s.label}>Property ZIP Code</label><input style={s.input} value={zip} onChange={e => setZip(e.target.value)} placeholder="5-digit ZIP" maxLength={5} autoComplete="off"/></div>
-                <div style={{ marginBottom: 16 }}><label style={s.label}>Password</label><input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password" onKeyDown={e => e.key === 'Enter' && handleBorrowerLogin('login')}/></div>
-                <button onClick={() => handleBorrowerLogin('login')} disabled={loading} style={{ ...s.btnBlue, width: '100%', marginTop: 4, opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
-                <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#4a5568' }}>First time? <a onClick={() => setScreen('register')} style={{ color: '#2e6da4', cursor: 'pointer', textDecoration: 'underline' }}>Create your account →</a></div>
-              </>
-            ) : (
-              <>
-                <div style={{ marginBottom: 16 }}><label style={s.label}>Username</label><input style={s.input} value={adminUser2} onChange={e => setAdminUser2(e.target.value)} placeholder="Admin username" autoComplete="off"/></div>
-                <div style={{ marginBottom: 16 }}><label style={s.label}>Password</label><input style={s.input} type="password" value={adminPass} onChange={e => setAdminPass(e.target.value)} placeholder="Admin password" onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}/></div>
-                <button onClick={handleAdminLogin} disabled={loading} style={{ ...s.btnBlue, width: '100%', background: '#4f46e5', marginTop: 4, opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In as Manager'}</button>
-              </>
-            )}
+            <div style={{ marginBottom: 16 }}><label style={s.label}>Last Name</label><input style={s.input} value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name on your loan" autoComplete="off"/></div>
+            <div style={{ marginBottom: 16 }}><label style={s.label}>Property ZIP Code</label><input style={s.input} value={zip} onChange={e => setZip(e.target.value)} placeholder="5-digit ZIP" maxLength={5} autoComplete="off"/></div>
+            <div style={{ marginBottom: 16 }}><label style={s.label}>Password</label><input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password" onKeyDown={e => e.key === 'Enter' && handleBorrowerLogin('login')}/></div>
+            <button onClick={() => handleBorrowerLogin('login')} disabled={loading} style={{ ...s.btnBlue, width: '100%', marginTop: 4, opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
+            <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#4a5568' }}>First time? <a onClick={() => setScreen('register')} style={{ color: '#2e6da4', cursor: 'pointer', textDecoration: 'underline' }}>Create your account →</a></div>
           </div>
         </div>
       )}
