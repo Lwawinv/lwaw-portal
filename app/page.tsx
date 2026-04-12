@@ -1,217 +1,242 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 
-const content = {
-  en: {
-    tagline: 'Amarillo, Texas · Seller Finance Loan Servicing',
-    hero: 'Professional Loan Servicing for',
-    heroSpan: 'Seller-Finance Notes',
-    heroSub: 'LWAW Investments, LLC provides third-party loan servicing for seller-financed real estate transactions across the Texas Panhandle.',
-    borrowerBtn: 'Borrower Login Portal',
-    questionsBtn: 'Common Questions',
-    tiles: [
-      { title: 'We Are the Servicer', body: 'LWAW Investments is the loan servicer — not the lender. Your note is held by a separate lending entity. LWAW collects payments, manages escrow, and coordinates communications on the note holder\'s behalf.' },
-      { title: 'Investment Properties Only', body: 'All loans serviced by LWAW are on non-owner-occupied investment properties. Borrowers are real estate investors managing properties under individual or entity ownership.' },
-      { title: 'Borrower Portal', body: 'Active borrowers log in to access their payment instructions, account number, lien holder details, escrow status, loan details, and payment history — all specific to their loan.' },
-    ],
-    faqTitle: 'Frequently Asked Questions',
-    faqSub: 'Common Questions',
-    faqDesc: 'Answers for borrowers, insurance agents, title companies, and note holders.',
-    aboutTag: 'About LWAW',
-    aboutTitle: 'Experienced. Local. Responsive.',
-    aboutP1: 'LWAW Investments, LLC is a privately held loan servicing company based in Amarillo, Texas, specializing in third-party servicing of seller-financed notes on non-owner-occupied investment properties across the Texas Panhandle.',
-    aboutP2: 'We serve note holders by managing payment collection, escrow administration, insurance compliance monitoring, and borrower communications.',
-    aboutP3: 'Bilingual (English/Spanish) support, responsive communication, and deep local market knowledge.',
-    bilingualLabel: 'Bilingual support',
-    panhandleLabel: 'Panhandle focused',
-    contactTitle: 'Get in Touch',
-    contactSub: 'Questions about a loan we service? Reach out directly — we respond quickly.',
-    footerDisclaimer: 'LWAW Investments, LLC is a loan servicer — not a lender or licensed mortgage company.',
-    faqs: [
-      { q: 'What does LWAW Investments do?', a: 'LWAW Investments, LLC is a third-party loan servicer for seller-financed real estate notes in Amarillo, Texas. We process payments, manage escrow, monitor insurance, and handle borrower communications on behalf of note holders. LWAW is the servicer — notes are originated and held by separate lending entities.' },
-      { q: 'Who is my lender?', a: 'Your lender is the entity listed on your promissory note. LWAW Investments services the loan on their behalf. Log in to the Borrower Portal to see your specific lending entity and lien holder information.' },
-      { q: 'How do I make my monthly payment?', a: 'Payments are made by bank deposit to your designated account. Each loan has a specific bank and account number — log in to the Borrower Portal to see yours. After every deposit, text a photo of your deposit slip to 806-680-3556.' },
-      { q: 'What if I cannot make my payment on time?', a: 'Contact us immediately at 806-680-3556 or lwawinv@gmail.com. The sooner you communicate, the more options we have. Loans 30+ days past due without communication are referred to attorneys.' },
-      { q: 'Who is responsible for property taxes?', a: 'It depends on your loan. Some loans include tax escrow — we pay taxes on your behalf. Other loans require you to pay directly by January 31st each year. Log in to the Borrower Portal to see your escrow status.' },
-      { q: 'What happens if I do not pay my property taxes?', a: 'Unpaid property taxes are a default of your loan agreement. Failure to pay by January 31st can result in late penalties, collection action by the county, and ultimately foreclosure. Do not ignore this — contact us immediately if you cannot pay.' },
-      { q: 'What are my insurance requirements?', a: 'Active property insurance is required at all times. Your policy must list the correct lien holders. Log in to the Borrower Portal to see the exact lien holders for your property. Send policies to lwawinv@gmail.com.' },
-      { q: 'What is escrow and do I have it?', a: 'Escrow means a portion of your monthly payment is reserved for property taxes and/or insurance. Not all loans include escrow. Log in to the Borrower Portal to see your escrow status.' },
-      { q: 'How do I get a payoff quote?', a: 'Contact Brad at lwawinv@gmail.com or 806-680-3556. We will provide your current balance, accrued interest, and any applicable fees.' },
-      { q: 'I am an insurance agent — what lien holder info do you need?', a: 'Email lwawinv@gmail.com with the property address and we will provide exact lien holder language. Certificates can be sent directly to lwawinv@gmail.com.' },
-      { q: 'I am a title company — who do I contact?', a: 'Contact Brad at lwawinv@gmail.com or 806-680-3556 for payoff quotes, lien releases, title commitments, and closing coordination.' },
-      { q: 'How do I get my Form 1098?', a: 'Form 1098 is issued annually by end of January. Contact lwawinv@gmail.com if you have not received it by mid-February. We need your SSN or Tax ID on file.' },
-    ],
-  },
-  es: {
-    tagline: 'Amarillo, Texas · Servicio de Prestamos',
-    hero: 'Servicio Profesional de Prestamos para',
-    heroSpan: 'Notas de Venta Financiada',
-    heroSub: 'LWAW Investments, LLC ofrece servicio de prestamos de terceros para transacciones inmobiliarias de venta financiada en el Panhandle de Texas.',
-    borrowerBtn: 'Portal del Prestatario',
-    questionsBtn: 'Preguntas Frecuentes',
-    tiles: [
-      { title: 'Somos el Administrador', body: 'LWAW Investments es el administrador del prestamo, no el prestamista. Su nota esta en manos de una entidad crediticia separada. LWAW recauda pagos, administra el deposito en garantia y coordina las comunicaciones.' },
-      { title: 'Solo Propiedades de Inversion', body: 'Todos los prestamos administrados por LWAW son sobre propiedades de inversion no ocupadas por el propietario. Los prestatarios son inversores inmobiliarios.' },
-      { title: 'Portal del Prestatario', body: 'Los prestatarios activos pueden iniciar sesion para acceder a instrucciones de pago, numero de cuenta, titulares de gravamenes, estado de deposito en garantia e historial de pagos.' },
-    ],
-    faqTitle: 'Preguntas Frecuentes',
-    faqSub: 'Preguntas Comunes',
-    faqDesc: 'Respuestas para prestatarios, agentes de seguros, companias de titulo y titulares de notas.',
-    aboutTag: 'Acerca de LWAW',
-    aboutTitle: 'Experiencia. Local. Respuesta Rapida.',
-    aboutP1: 'LWAW Investments, LLC es una empresa privada de administracion de prestamos con sede en Amarillo, Texas, especializada en el servicio de terceros de notas de venta financiada en el Panhandle de Texas.',
-    aboutP2: 'Servimos a los titulares de notas administrando la recaudacion de pagos, la administracion del deposito en garantia, el monitoreo de cumplimiento de seguros y las comunicaciones con los prestatarios.',
-    aboutP3: 'Soporte bilingue (ingles/espanol), comunicacion receptiva y profundo conocimiento del mercado local.',
-    bilingualLabel: 'Soporte bilingue',
-    panhandleLabel: 'Enfocado en Panhandle',
-    contactTitle: 'Contactenos',
-    contactSub: 'Preguntas sobre un prestamo que administramos? Comuniquese directamente — respondemos rapidamente.',
-    footerDisclaimer: 'LWAW Investments, LLC es un administrador de prestamos — no es un prestamista ni una empresa hipotecaria con licencia.',
-    faqs: [
-      { q: 'Que hace LWAW Investments?', a: 'LWAW Investments, LLC es un administrador de prestamos de terceros para notas inmobiliarias de venta financiada en Amarillo, Texas. Procesamos pagos, administramos depositos en garantia, monitoreamos seguros y manejamos comunicaciones con prestatarios en nombre de los titulares de notas.' },
-      { q: 'Quien es mi prestamista?', a: 'Su prestamista es la entidad indicada en su pagare. LWAW Investments administra el prestamo en su nombre. Inicie sesion en el Portal del Prestatario para ver su entidad crediticia especifica.' },
-      { q: 'Como hago mi pago mensual?', a: 'Los pagos se realizan mediante deposito bancario en su cuenta designada. Cada prestamo tiene un banco y numero de cuenta especificos. Inicie sesion en el Portal para ver los suyos. Despues de cada deposito, envienos una foto del comprobante al 806-680-3556.' },
-      { q: 'Que pasa si no puedo pagar a tiempo?', a: 'Contactenos de inmediato al 806-680-3556 o lwawinv@gmail.com. Cuanto antes se comunique, mas opciones tenemos disponibles.' },
-      { q: 'Que pasa si no pago los impuestos de la propiedad?', a: 'Los impuestos de propiedad no pagados son un incumplimiento de su contrato de prestamo. La falta de pago antes del 31 de enero puede resultar en multas, accion de cobro por parte del condado y, en ultima instancia, ejecucion hipotecaria. No ignore esto — contactenos de inmediato si no puede pagar.' },
-      { q: 'Cuales son mis requisitos de seguro?', a: 'Se requiere seguro de propiedad activo en todo momento. Su poliza debe incluir a los titulares de gravamenes correctos. Inicie sesion en el Portal del Prestatario para ver los titulares de gravamenes de su propiedad. Envie las polizas a lwawinv@gmail.com.' },
-      { q: 'Como obtengo mi Formulario 1098?', a: 'El Formulario 1098 se emite anualmente antes de fin de enero. Contactenos en lwawinv@gmail.com si no lo ha recibido para mediados de febrero.' },
-    ],
-  }
+const ENTITIES: Record<string, { address: string; signer: string; bank: string; acct: string; bankAddr: string }> = {
+  'A2DSTX, LLC':   { address: '1026 SW 6th, Amarillo TX 79101', signer: 'Arick Wray, member', bank: 'Prosperity Bank', acct: '41010620', bankAddr: '3900 S Soncy, Amarillo TX' },
+  'A2PI, LLC':     { address: 'P.O. Box 740, Bushland, TX 79012', signer: 'Arick Wray, member', bank: 'Interstate State Bank', acct: '', bankAddr: '5085 S Coulter, Amarillo TX' },
+  'A2AF2, LLC':    { address: '1026 SW 6th, Amarillo TX 79101', signer: 'Arick Wray, member', bank: 'A2AF2 Escrow', acct: '', bankAddr: '' },
+  'A2BH, LLC':     { address: '1612 S Washington, Amarillo TX 79102', signer: 'Arick Wray, member', bank: 'Interstate State Bank', acct: '31013820', bankAddr: '5085 S Coulter, Amarillo TX' },
+  'A2BA Finance, LLC': { address: '1612 S Washington St, TX 79102', signer: 'Arick Wray, member', bank: 'Western Bank', acct: '8127722', bankAddr: '4800 Lexington Square Suite 100, Amarillo TX 79119' },
+  'A Squared Property Investments, LLC': { address: '1612 S Washington, Amarillo TX 79102', signer: 'Arick Wray, member', bank: 'Prosperity Bank', acct: '', bankAddr: '' },
+  'Equity Trust Company Custodian FBO Arick Wray IRA': { address: '1612 S Washington, Amarillo TX 79102', signer: '', bank: 'Equity Trust (trustetc.com)', acct: '', bankAddr: '' },
 }
 
-export default function HomePage() {
-  const [lang, setLang] = useState<'en'|'es'>('en')
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const t = content[lang]
+const s = {
+  card: { background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, padding: '22px 26px', marginBottom: 20 } as React.CSSProperties,
+  label: { fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: '#4a5568', fontWeight: 600, marginBottom: 6, display: 'block' as const },
+  input: { width: '100%', padding: '9px 13px', border: '1px solid #dce4ed', borderRadius: 5, fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: '#1c2026', outline: 'none', boxSizing: 'border-box' as const },
+  grid2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 14 } as React.CSSProperties,
+  grid3: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 14 } as React.CSSProperties,
+  btnBlue: { background: '#2e6da4', color: '#fff', border: 'none', padding: '11px 24px', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" } as React.CSSProperties,
+  btnGreen: { background: '#15803d', color: '#fff', border: 'none', padding: '11px 24px', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" } as React.CSSProperties,
+  section: { fontSize: 12, fontWeight: 700, color: '#2e6da4', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 10, marginTop: 20, paddingBottom: 6, borderBottom: '1px solid #e8f2fb' },
+  output: { background: '#f7f9fc', border: '1px solid #dce4ed', borderRadius: 8, padding: '20px 24px', fontFamily: 'monospace', fontSize: 13, lineHeight: '1.8', whiteSpace: 'pre-wrap' as const, marginTop: 16 },
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div style={{ marginBottom: 14 }}><label style={s.label}>{label}</label>{children}</div>
+}
+
+function DocOrderForm() {
+  const [form, setForm] = useState<any>({ lenderEntity: 'A2DSTX, LLC', hasPrepay: false, taxesEscrowed: false, insuranceEscrowed: false })
+  const [output, setOutput] = useState('')
+  const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }))
+
+  const onEntityChange = (entity: string) => {
+    const cfg = ENTITIES[entity]
+    if (cfg) { set('lenderEntity', entity); set('lenderAddress', cfg.address); set('lenderSigner', cfg.signer); set('bank', cfg.bank); set('accountNum', cfg.acct); set('bankAddress', cfg.bankAddr) }
+  }
+
+  const generate = () => {
+    const f = form
+    const escrowNote = (f.taxesEscrowed || f.insuranceEscrowed) ? '\n- TAXES AND INSURANCE WILL BE ESCROWED ON THIS LOAN.' : ''
+    const prepayNote = !f.hasPrepay ? '\n- NO PREPAYMENT LANGUAGE' : (f.prepayTerms ? `\n- Prepay: ${f.prepayTerms}` : '')
+    setOutput(`Docs Needed: Note, Deed of Trust, Warranty Deed & Non-Homestead\n\nLender: ${f.lenderEntity || ''}\n     By: ${f.lenderSigner || ''}\n     ${f.lenderAddress || ''}\n\nBorrower: ${f.borrowerName || ''}\n${f.borrowerAddress || ''}\n\nNOTE TERMS:\nNote Amount: $${f.noteAmount || ''}\nP&I of $${f.piPayment || ''} based on a ${f.termYears || '30'} year amortization.${f.firstPayment ? ` First payment ${f.firstPayment}` : ''}\nInterest Rate: ${f.interestRate || ''}% interest fixed${prepayNote}${escrowNote}\nNote Date: ${f.noteDate || ''}\nMaturity Date: ${f.maturityDate || ''}\n\nCollateral: FLDT ${f.collateral || ''} — See Attached Title Commitment\n\nPayment Instructions:\n- Go to ${f.bank || ''} (${f.bankAddress || ''}) and deposit into account # ${f.accountNum || ''} under ${f.lenderEntity || ''}.\n- Please text a copy of deposit slip to 806-680-3556.\n\nSee attached Title Commitment`)
+  }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'DM Sans', sans-serif" }}>
-
-      {/* NAV */}
-      <nav style={{ background: '#fff', borderBottom: '1px solid #dce4ed', padding: '0 5vw', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64, position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 8px rgba(0,0,0,.06)' }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0 }}>
-          <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
-            <rect x="4" y="22" width="7" height="14" rx="1" fill="#1c2026"/><rect x="14" y="15" width="7" height="21" rx="1" fill="#1c2026"/><rect x="24" y="7" width="7" height="29" rx="1" fill="#1c2026"/>
-            <path d="M6 28 Q20 10 34 8" stroke="#2e6da4" strokeWidth="2.5" fill="none" strokeLinecap="round"/><polygon points="34,4 38,10 30,10" fill="#2e6da4"/>
-          </svg>
-          <div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 14, color: '#1c2026', fontWeight: 700 }}>LWAW Investments</div>
-            <div style={{ fontSize: 9, color: '#2e6da4', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 500 }}>LLC · Loan Servicer · Amarillo, TX</div>
-          </div>
-        </a>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={() => { setLang(l => l === 'en' ? 'es' : 'en'); setOpenFaq(null) }} style={{ background: '#f0f4f8', border: '1px solid #dce4ed', padding: '5px 11px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1c2026', whiteSpace: 'nowrap' }}>
-            {lang === 'en' ? 'ES' : 'EN'}
-          </button>
-          <a href="#contact" style={{ textDecoration: 'none', color: '#4a5568', fontSize: 13, fontWeight: 500 }}>Contact</a>
-          <Link href="/portal" style={{ background: '#2e6da4', color: '#fff', padding: '8px 14px', borderRadius: 5, textDecoration: 'none', fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' }}>{t.borrowerBtn}</Link>
-        </div>
-      </nav>
-
-      {/* HERO */}
-      <div style={{ background: 'linear-gradient(150deg,#0d1218 0%,#152030 55%,#0e1f35 100%)', color: '#fff', padding: 'clamp(48px,8vw,90px) 5vw clamp(56px,9vw,100px)', textAlign: 'center' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(110,180,240,.14)', border: '1px solid rgba(110,180,240,.28)', color: '#b8d8f4', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '5px 18px', borderRadius: 20, marginBottom: 22 }}>
-          {t.tagline}
-        </div>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(26px,5vw,52px)', fontWeight: 700, lineHeight: 1.15, marginBottom: 16, color: '#f4f8ff' }}>
-          {t.hero}<br/><span style={{ color: '#7dc4f0' }}>{t.heroSpan}</span>
-        </h1>
-        <p style={{ fontSize: 'clamp(14px,2vw,17px)', color: '#c4d6e8', maxWidth: 540, margin: '0 auto 36px', fontWeight: 300 }}>
-          {t.heroSub}
-        </p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/portal" style={{ background: '#2e6da4', color: '#fff', padding: 'clamp(12px,2vw,15px) clamp(22px,4vw,34px)', borderRadius: 6, textDecoration: 'none', fontWeight: 700, fontSize: 'clamp(14px,2vw,17px)', border: '2px solid #4a8fc4', boxShadow: '0 4px 20px rgba(46,109,164,.4)' }}>
-            {lang === 'en' ? '🔐 ' : '🔐 '}{t.borrowerBtn}
-          </Link>
-          <a href="#faq" style={{ background: 'transparent', color: '#f4f8ff', padding: 'clamp(12px,2vw,15px) clamp(22px,4vw,34px)', borderRadius: 6, textDecoration: 'none', fontWeight: 500, fontSize: 'clamp(14px,2vw,17px)', border: '2px solid rgba(255,255,255,.3)' }}>
-            {t.questionsBtn}
-          </a>
-        </div>
+    <div>
+      <div style={s.section}>Lender</div>
+      <div style={s.grid2}>
+        <Field label="Entity"><select value={form.lenderEntity} onChange={e => onEntityChange(e.target.value)} style={s.input}>{Object.keys(ENTITIES).map(e => <option key={e}>{e}</option>)}</select></Field>
+        <Field label="Signer"><input style={s.input} value={form.lenderSigner || ''} onChange={e => set('lenderSigner', e.target.value)} /></Field>
       </div>
+      <Field label="Lender Address"><input style={s.input} value={form.lenderAddress || ''} onChange={e => set('lenderAddress', e.target.value)} /></Field>
+      <div style={s.section}>Borrower</div>
+      <Field label="Full Legal Name(s)"><input style={s.input} value={form.borrowerName || ''} onChange={e => set('borrowerName', e.target.value)} placeholder="First Last and First Last" /></Field>
+      <Field label="Mailing Address"><input style={s.input} value={form.borrowerAddress || ''} onChange={e => set('borrowerAddress', e.target.value)} /></Field>
+      <div style={s.section}>Note Terms</div>
+      <div style={s.grid3}>
+        <Field label="Note Amount ($)"><input style={s.input} value={form.noteAmount || ''} onChange={e => set('noteAmount', e.target.value)} placeholder="165,000" /></Field>
+        <Field label="P&I Payment ($)"><input style={s.input} value={form.piPayment || ''} onChange={e => set('piPayment', e.target.value)} placeholder="1,557.71" /></Field>
+        <Field label="Interest Rate (%)"><input style={s.input} value={form.interestRate || ''} onChange={e => set('interestRate', e.target.value)} placeholder="10.5" /></Field>
+      </div>
+      <div style={s.grid3}>
+        <Field label="Term (years)"><input style={s.input} value={form.termYears || '30'} onChange={e => set('termYears', e.target.value)} /></Field>
+        <Field label="Note Date"><input style={s.input} type="date" value={form.noteDate || ''} onChange={e => set('noteDate', e.target.value)} /></Field>
+        <Field label="First Payment Date"><input style={s.input} type="date" value={form.firstPayment || ''} onChange={e => set('firstPayment', e.target.value)} /></Field>
+      </div>
+      <Field label="Collateral Property Address"><input style={s.input} value={form.collateral || ''} onChange={e => set('collateral', e.target.value)} /></Field>
+      <div style={{ display: 'flex', gap: 24, marginBottom: 14 }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}><input type="checkbox" checked={!form.hasPrepay} onChange={e => set('hasPrepay', !e.target.checked)} /> No Prepayment Language</label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}><input type="checkbox" checked={form.taxesEscrowed} onChange={e => set('taxesEscrowed', e.target.checked)} /> Escrow Taxes</label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14 }}><input type="checkbox" checked={form.insuranceEscrowed} onChange={e => set('insuranceEscrowed', e.target.checked)} /> Escrow Insurance</label>
+      </div>
+      <div style={s.section}>Payment Instructions</div>
+      <div style={s.grid3}>
+        <Field label="Bank"><input style={s.input} value={form.bank || ''} onChange={e => set('bank', e.target.value)} /></Field>
+        <Field label="Account Number"><input style={s.input} value={form.accountNum || ''} onChange={e => set('accountNum', e.target.value)} /></Field>
+        <Field label="Bank Address"><input style={s.input} value={form.bankAddress || ''} onChange={e => set('bankAddress', e.target.value)} /></Field>
+      </div>
+      <button onClick={generate} style={s.btnBlue}>Generate Doc Order</button>
+      {output && <div><div style={s.output}>{output}</div><button onClick={() => navigator.clipboard.writeText(output)} style={{ ...s.btnGreen, marginTop: 10 }}>Copy to Clipboard</button></div>}
+    </div>
+  )
+}
 
-      {/* INFO STRIP */}
-      <div style={{ background: '#111820', padding: 'clamp(36px,5vw,52px) 5vw' }}>
-        <div style={{ maxWidth: 1020, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32 }}>
-          {t.tiles.map((tile, i) => (
-            <div key={i}>
-              <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: '#7dc4f0', marginBottom: 8, fontWeight: 600 }}>{tile.title}</div>
-              <p style={{ fontSize: 14, color: '#c4d6e8', fontWeight: 300, lineHeight: 1.75 }}>{tile.body}</p>
+function ClosingFeesCalc() {
+  const [form, setForm] = useState<any>({ txFee: '500', attyFee: '555', attyPages: '13', titleCompany: 'Texas Legacy Land Title' })
+  const [output, setOutput] = useState('')
+  const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }))
+
+  const generate = () => {
+    const f = form
+    const taxAmt = parseFloat(f.taxAmount || '0'), taxMo = parseInt(f.taxMonths || '0')
+    const insAmt = parseFloat(f.insuranceAmount || '0'), insMo = parseInt(f.insuranceMonths || '0')
+    const taxCollect = Math.round(taxAmt/12*taxMo*100)/100
+    const insCollect = Math.round(insAmt/12*insMo*100)/100
+    const totalEscrow = Math.round((taxCollect+insCollect)*100)/100
+    const prepaid = parseFloat(f.prepaidInterest || '0')
+    const txFee = parseFloat(f.txFee || '0'), attyFee = parseFloat(f.attyFee || '0')
+    const total = totalEscrow + prepaid + txFee + attyFee
+    setOutput(`${f.entity || '[ENTITY]'} - Closing Fees & Instructions\n\nAttn: Brad Stuteville\nLWAW Investments, LLC — 1026 SW 6th Amarillo, TX 79101\n\nBorrower: ${f.borrowerName || ''}\nProperty: ${f.address || ''}\nLoan Amount: $${f.loanAmount || 'TBD'} – Final TBD\n\nPrepaid Interest: $${prepaid.toFixed(2)}\n\n${taxAmt>0||insAmt>0?`ESCROW:\nEST Taxes – $${taxAmt.toFixed(2)} x ${taxMo} months = $${taxCollect.toFixed(2)}\nInsurance – $${insAmt.toFixed(2)} x ${insMo} months = $${insCollect.toFixed(2)}\n- Total Escrow Collections = $${totalEscrow.toFixed(2)}\n`:'No escrow on this loan.\n'}\nFEES:\n$${txFee.toFixed(2)} – Transaction fees to LWAW Investments, LLC\n$${attyFee.toFixed(2)} – Attorney fees – payable to Morgan Williamson\n${f.attyPages||'13'} page DOT\n\nTOTAL DUE AT CLOSING: $${total.toFixed(2)}\n\nTitle Company: ${f.titleCompany||''}\n\nThanks!\nBrad Stuteville`)
+  }
+
+  return (
+    <div>
+      <div style={s.section}>Deal Info</div>
+      <div style={s.grid2}>
+        <Field label="Entity"><select style={s.input} value={form.entity||''} onChange={e => set('entity', e.target.value)}><option value="">Select entity...</option>{Object.keys(ENTITIES).map(e => <option key={e}>{e}</option>)}</select></Field>
+        <Field label="Loan Amount"><input style={s.input} value={form.loanAmount||''} onChange={e => set('loanAmount', e.target.value)} placeholder="165,000" /></Field>
+      </div>
+      <Field label="Borrower Name"><input style={s.input} value={form.borrowerName||''} onChange={e => set('borrowerName', e.target.value)} /></Field>
+      <Field label="Property Address"><input style={s.input} value={form.address||''} onChange={e => set('address', e.target.value)} /></Field>
+      <div style={s.section}>Escrow (leave blank if none)</div>
+      <div style={s.grid2}>
+        <Field label="Annual Tax Amount ($)"><input style={s.input} value={form.taxAmount||''} onChange={e => set('taxAmount', e.target.value)} placeholder="2,329.05" /></Field>
+        <Field label="Tax Months to Collect"><input style={s.input} value={form.taxMonths||''} onChange={e => set('taxMonths', e.target.value)} placeholder="10" /></Field>
+      </div>
+      <div style={s.grid2}>
+        <Field label="Annual Insurance ($)"><input style={s.input} value={form.insuranceAmount||''} onChange={e => set('insuranceAmount', e.target.value)} placeholder="2,706.16" /></Field>
+        <Field label="Insurance Months to Collect"><input style={s.input} value={form.insuranceMonths||''} onChange={e => set('insuranceMonths', e.target.value)} placeholder="14" /></Field>
+      </div>
+      <div style={s.section}>Fees</div>
+      <div style={s.grid3}>
+        <Field label="Prepaid Interest ($)"><input style={s.input} value={form.prepaidInterest||'0'} onChange={e => set('prepaidInterest', e.target.value)} /></Field>
+        <Field label="LWAW Tx Fee ($)"><input style={s.input} value={form.txFee||'500'} onChange={e => set('txFee', e.target.value)} /></Field>
+        <Field label="Attorney Fee ($)"><input style={s.input} value={form.attyFee||'555'} onChange={e => set('attyFee', e.target.value)} /></Field>
+      </div>
+      <div style={s.grid2}>
+        <Field label="DOT Pages"><input style={s.input} value={form.attyPages||'13'} onChange={e => set('attyPages', e.target.value)} /></Field>
+        <Field label="Title Company"><input style={s.input} value={form.titleCompany||''} onChange={e => set('titleCompany', e.target.value)} /></Field>
+      </div>
+      <button onClick={generate} style={s.btnBlue}>Calculate & Generate</button>
+      {output && <div><div style={s.output}>{output}</div><button onClick={() => navigator.clipboard.writeText(output)} style={{ ...s.btnGreen, marginTop: 10 }}>Copy</button></div>}
+    </div>
+  )
+}
+
+const CHECKLIST = [
+  { id:1, phase:'Pre-Contract', text:'Get signed purchase contract' },
+  { id:2, phase:'Pre-Contract', text:'Let buyer know we need docs ASAP' },
+  { id:3, phase:'Buyer Onboarding', text:'Reply with intro — get ID + phone + email' },
+  { id:4, phase:'Buyer Onboarding', text:'Add Social Security / Tax ID to 1098 tracking' },
+  { id:5, phase:'Buyer Onboarding', text:'Request original Note/DT from lender if applicable' },
+  { id:6, phase:'Title & Taxes', text:'Request Tax Certs from Title Company + Title Commitment' },
+  { id:7, phase:'Title & Taxes', text:'Create new folder; save contact + contact info (IDs)' },
+  { id:8, phase:'Spreadsheet', text:'Add to spreadsheet Summary (Master Note Tracking)' },
+  { id:9, phase:'Spreadsheet', text:'Add new tab with Amortization Schedule' },
+  { id:10, phase:'Spreadsheet', text:'Add to Escrow Tracking (if applicable)' },
+  { id:11, phase:'Insurance', text:'Get insurance quote from buyer' },
+  { id:12, phase:'Insurance', text:'Verify amount by reaching out to agent — send invoice to Title Co' },
+  { id:13, phase:'Closing Prep', text:'Send fees to Title Company' },
+  { id:14, phase:'Closing Prep', text:'Send formal intro email requesting insurance ASAP' },
+  { id:15, phase:'Closing Prep', text:'Wait on Title Co to send final loan amount from Settlement Statement' },
+  { id:16, phase:'Closing Prep', text:'Request Title Commitment with final loan $ from Title Co' },
+  { id:17, phase:'Documents', text:'Prepare Doc Order form — communicate date docs needed' },
+  { id:18, phase:'Documents', text:'Receive loan docs — review & make sure it matches' },
+  { id:19, phase:'Documents', text:'Send loan docs to Title Company' },
+  { id:20, phase:'Documents', text:'Save copy in folder' },
+  { id:21, phase:'Post-Close', text:'Send payment intro letter to borrower (email)' },
+  { id:22, phase:'Post-Close', text:'Send T1 new borrower intro text via Quo' },
+  { id:23, phase:'Post-Close', text:'Send T10 insurance request text via Quo' },
+  { id:24, phase:'Post-Close', text:'Add borrower to lwawinv.com portal (Supabase)' },
+  { id:25, phase:'Post-Close', text:'Update loss payee with insurance agent' },
+]
+
+function NewDealChecklist() {
+  const [checked, setChecked] = useState<number[]>([])
+  const [dealName, setDealName] = useState('')
+  const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
+  const phaseSet: Record<string, boolean> = {}
+  CHECKLIST.forEach(i => { phaseSet[i.phase] = true })
+  const phases = Object.keys(phaseSet)
+  const pct = Math.round(checked.length/CHECKLIST.length*100)
+  const phaseColors: Record<string,string> = { 'Pre-Contract':'#2e6da4','Buyer Onboarding':'#15803d','Title & Taxes':'#b45309','Spreadsheet':'#7c3aed','Insurance':'#f97316','Closing Prep':'#dc2626','Documents':'#0891b2','Post-Close':'#15803d' }
+
+  return (
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <label style={s.label}>Deal / Property Name</label>
+        <input style={{ ...s.input, maxWidth: 420 }} value={dealName} onChange={e => setDealName(e.target.value)} placeholder="e.g. 1601 Hillcrest — Garcia/Deleon" />
+      </div>
+      <div style={{ display:'flex', justifyContent:'space-between', marginBottom: 6 }}>
+        <span style={{ fontSize:13, color:'#4a5568' }}>{checked.length} of {CHECKLIST.length} complete</span>
+        <span style={{ fontSize:13, color:'#4a5568', fontFamily:'monospace' }}>{pct}%</span>
+      </div>
+      <div style={{ height:8, background:'#e2e8f0', borderRadius:4, overflow:'hidden', marginBottom:24 }}>
+        <div style={{ height:'100%', width:pct+'%', background:'linear-gradient(90deg,#2e6da4,#22c55e)', transition:'width .3s', borderRadius:4 }} />
+      </div>
+      {phases.map(phase => {
+        const items = CHECKLIST.filter(i => i.phase === phase)
+        const done = items.filter(i => checked.includes(i.id)).length
+        return (
+          <div key={phase} style={{ background:'#fff', border:'1px solid #dce4ed', borderLeft:`3px solid ${phaseColors[phase]||'#2e6da4'}`, borderRadius:8, marginBottom:14, overflow:'hidden' }}>
+            <div style={{ padding:'10px 16px', borderBottom:'1px solid #f0f4f8', display:'flex', justifyContent:'space-between', background:'#f7f9fc' }}>
+              <span style={{ fontWeight:700, fontSize:13, color:phaseColors[phase]||'#2e6da4' }}>{phase}</span>
+              <span style={{ fontSize:11, color:'#8b949e', fontFamily:'monospace' }}>{done}/{items.length}</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* FAQ */}
-      <section id="faq" style={{ padding: 'clamp(48px,6vw,72px) 5vw', background: '#f7f9fc' }}>
-        <div style={{ maxWidth: 1020, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 2.5, textTransform: 'uppercase', color: '#2e6da4', fontWeight: 600, marginBottom: 8 }}>{t.faqTitle}</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(22px,3vw,36px)', marginBottom: 10 }}>{t.faqSub}</h2>
-          <p style={{ color: '#4a5568', fontSize: 15, maxWidth: 580, marginBottom: 32, fontWeight: 300 }}>{t.faqDesc}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
-            {t.faqs.map((faq, i) => (
-              <div key={i} onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 8, padding: '18px 20px', cursor: 'pointer' }}>
-                <div style={{ fontWeight: 700, fontSize: 13.5, color: '#1c2026', display: 'flex', justifyContent: 'space-between', gap: 10, userSelect: 'none', lineHeight: 1.4 }}>
-                  {faq.q}
-                  <span style={{ color: '#2e6da4', fontSize: 18, flexShrink: 0, transform: openFaq === i ? 'rotate(45deg)' : 'none', transition: 'transform .25s' }}>+</span>
+            {items.map(item => (
+              <div key={item.id} onClick={() => toggle(item.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 16px', cursor:'pointer', borderBottom:'1px solid #f9fafb', background:checked.includes(item.id)?'#f0fdf4':'transparent' }}>
+                <div style={{ width:18, height:18, borderRadius:3, border:`2px solid ${checked.includes(item.id)?(phaseColors[phase]||'#2e6da4'):'#d1d5db'}`, background:checked.includes(item.id)?(phaseColors[phase]||'#2e6da4'):'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  {checked.includes(item.id) && <span style={{ color:'#fff', fontSize:11, fontWeight:900 }}>✓</span>}
                 </div>
-                {openFaq === i && <p style={{ fontSize: 13, color: '#4a5568', lineHeight: 1.75, marginTop: 10, fontWeight: 300 }}>{faq.a}</p>}
+                <span style={{ fontSize:13, color:checked.includes(item.id)?'#9ca3af':'#1c2026', textDecoration:checked.includes(item.id)?'line-through':'none' }}>{item.text}</span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        )
+      })}
+    </div>
+  )
+}
 
-      {/* ABOUT */}
-      <section id="about" style={{ padding: 'clamp(48px,6vw,72px) 5vw', background: '#fff' }}>
-        <div style={{ maxWidth: 1020, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 48, alignItems: 'center' }}>
-          <div style={{ background: 'linear-gradient(135deg,#0d1a28,#173352)', borderRadius: 12, height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style={{ opacity: .8 }}>
-              <rect x="8" y="44" width="14" height="28" rx="2" fill="white"/><rect x="28" y="30" width="14" height="42" rx="2" fill="white"/><rect x="48" y="14" width="14" height="58" rx="2" fill="white"/>
-              <path d="M12 56 Q40 20 68 12" stroke="#7dc4f0" strokeWidth="4" fill="none" strokeLinecap="round"/><polygon points="68,6 76,18 60,18" fill="#7dc4f0"/>
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: 11, letterSpacing: 2.5, textTransform: 'uppercase', color: '#2e6da4', fontWeight: 600, marginBottom: 10 }}>{t.aboutTag}</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(20px,3vw,34px)', marginBottom: 12 }}>{t.aboutTitle}</h2>
-            <p style={{ color: '#4a5568', fontSize: 14, marginBottom: 12, fontWeight: 300 }}>{t.aboutP1}</p>
-            <p style={{ color: '#4a5568', fontSize: 14, fontWeight: 300 }}>{t.aboutP3}</p>
-            <div style={{ display: 'flex', gap: 28, marginTop: 22 }}>
-              <div><strong style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: '#2e6da4', display: 'block' }}>EN/ES</strong><span style={{ fontSize: 12, color: '#4a5568' }}>{t.bilingualLabel}</span></div>
-              <div><strong style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: '#2e6da4', display: 'block' }}>TX</strong><span style={{ fontSize: 12, color: '#4a5568' }}>{t.panhandleLabel}</span></div>
-            </div>
-          </div>
+export default function ToolsPage() {
+  const [activeTab, setActiveTab] = useState('docorder')
+  const tabs = [{ id:'docorder', label:'Doc Order Form' },{ id:'closingfees', label:'Closing Fees Calculator' },{ id:'checklist', label:'New Deal Checklist' }]
+  return (
+    <div style={{ minHeight:'100vh', background:'#f7f9fc', fontFamily:"'DM Sans', sans-serif" }}>
+      <nav style={{ background:'#0d1117', borderBottom:'1px solid #30363d', padding:'0 28px', display:'flex', alignItems:'center', justifyContent:'space-between', height:56 }}>
+        <span style={{ fontFamily:"'Playfair Display', serif", fontSize:16, color:'#f0f6fc', fontWeight:700 }}>LWAW Deal Tools</span>
+        <div style={{ display:'flex', gap:16 }}>
+          <Link href="/dashboard" style={{ fontSize:12, color:'#8b949e', textDecoration:'none' }}>Dashboard</Link>
+          <Link href="/portal" style={{ fontSize:12, color:'#8b949e', textDecoration:'none' }}>Borrower Portal</Link>
+          <Link href="/" style={{ fontSize:12, color:'#8b949e', textDecoration:'none' }}>Public Site</Link>
         </div>
-      </section>
-
-      {/* CONTACT */}
-      <div id="contact" style={{ background: '#131d2a', color: '#fff', padding: 'clamp(40px,6vw,60px) 5vw', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", color: '#f4f8ff', marginBottom: 8, fontSize: 'clamp(20px,3vw,32px)' }}>{t.contactTitle}</h2>
-        <p style={{ color: '#a8c0d6', marginBottom: 28, fontWeight: 300, fontSize: 15 }}>{t.contactSub}</p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[
-            { icon: '📞', text: '806-680-3556', href: 'tel:8066803556' },
-            { icon: '📧', text: 'lwawinv@gmail.com', href: 'mailto:lwawinv@gmail.com' },
-            { icon: '🔐', text: t.borrowerBtn, href: '/portal' },
-          ].map((pill, i) => (
-            <a key={i} href={pill.href} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.16)', padding: '10px 18px', borderRadius: 6, color: '#e8f2ff', textDecoration: 'none', fontSize: 14 }}>
-              <span>{pill.icon}</span>{pill.text}
-            </a>
+      </nav>
+      <div style={{ maxWidth:900, margin:'0 auto', padding:'28px 24px' }}>
+        <div style={{ display:'flex', gap:2, marginBottom:28, borderBottom:'2px solid #dce4ed' }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding:'10px 20px', fontSize:14, fontWeight:600, color:activeTab===t.id?'#2e6da4':'#4a5568', cursor:'pointer', background:'none', border:'none', borderBottom:activeTab===t.id?'2px solid #2e6da4':'2px solid transparent', marginBottom:-2, fontFamily:"'DM Sans', sans-serif", whiteSpace:'nowrap' }}>{t.label}</button>
           ))}
         </div>
-      </div>
-
-      {/* FOOTER */}
-      <footer style={{ background: '#0a0f18', color: '#3e5066', padding: '24px 5vw', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, fontSize: 12 }}>
-        <span>© 2026 LWAW Investments, LLC · Amarillo, Texas</span>
-        <div style={{ display: 'flex', gap: 20 }}>
-          <a href="#faq" style={{ color: '#3e5066', textDecoration: 'none' }}>FAQ</a>
-          <Link href="/portal" style={{ color: '#3e5066', textDecoration: 'none' }}>Borrower Login</Link>
-          <a href="mailto:lwawinv@gmail.com" style={{ color: '#3e5066', textDecoration: 'none' }}>Contact</a>
+        <div style={{ background:'#fff', border:'1px solid #dce4ed', borderRadius:10, padding:'22px 26px' }}>
+          {activeTab === 'docorder' && <DocOrderForm />}
+          {activeTab === 'closingfees' && <ClosingFeesCalc />}
+          {activeTab === 'checklist' && <NewDealChecklist />}
         </div>
-        <span style={{ maxWidth: 380 }}>{t.footerDisclaimer}</span>
-      </footer>
+      </div>
     </div>
   )
 }
