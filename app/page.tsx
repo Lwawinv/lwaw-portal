@@ -166,11 +166,13 @@ const CHECKLIST = [
 ]
 
 function NewDealChecklist() {
-  const [checked, setChecked] = useState<number[]>([])
+const [checked, setChecked] = useState<number[]>([])
   const [dealName, setDealName] = useState('')
-  const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
-  const phaseSet: Record<string, boolean> = {}
+const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
+const phaseSet: Record<string, boolean> = {}
   CHECKLIST.forEach(i => { phaseSet[i.phase] = true })
+  const phases = Object.keys(phaseSet)
+  const pct = Math.round(checked.length/CHECKLIST.length*100)
   const phases = Object.keys(phaseSet)
   const pct = Math.round(checked.length/CHECKLIST.length*100)
   const phaseColors: Record<string,string> = { 'Pre-Contract':'#2e6da4','Buyer Onboarding':'#15803d','Title & Taxes':'#b45309','Spreadsheet':'#7c3aed','Insurance':'#f97316','Closing Prep':'#dc2626','Documents':'#0891b2','Post-Close':'#15803d' }
