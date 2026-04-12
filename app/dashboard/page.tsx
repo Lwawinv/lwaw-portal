@@ -347,13 +347,13 @@ export default function DashboardPage() {
     .filter(b => entityFilter === 'All Entities' || b.entity === entityFilter)
     .filter(b => !search || b.address.toLowerCase().includes(search.toLowerCase()) || b.borrower_name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
-      let av, bv
+      let av: any, bv: any
       if (sortCol === 'due_day') { av = parseInt(a.due_day); bv = parseInt(b.due_day) }
       else if (sortCol === 'address') { av = a.address; bv = b.address }
       else if (sortCol === 'payment_amount') { av = parseFloat(a.payment_amount.replace(/[$,]/g,'')); bv = parseFloat(b.payment_amount.replace(/[$,]/g,'')) }
       else if (sortCol === 'status') { av = getPaymentStatus(a).status; bv = getPaymentStatus(b).status }
       else if (sortCol === 'entity') { av = a.entity; bv = b.entity }
-      else { av = a[sortCol]; bv = b[sortCol] }
+      else { av = (a as any)[sortCol]; bv = (b as any)[sortCol] }
       if (av < bv) return sortDir === 'asc' ? -1 : 1
       if (av > bv) return sortDir === 'asc' ? 1 : -1
       return 0
@@ -376,7 +376,7 @@ export default function DashboardPage() {
     card: { background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, padding: '18px 22px' },
     label: { fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, marginBottom: 6 },
     input: { width: '100%', padding: '10px 14px', border: '1px solid #dce4ed', borderRadius: 5, fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: '#1c2026', background: '#fff', outline: 'none' },
-    tab: (active: boolean) => ({ padding: '10px 18px', fontSize: 13, fontWeight: 600, color: active ? '#2e6da4' : '#4a5568', cursor: 'pointer', borderBottom: active ? '2px solid #2e6da4' : '2px solid transparent', marginBottom: -2, background: 'none', border: 'none', borderBottomWidth: 2, borderBottomStyle: 'solid', borderBottomColor: active ? '#2e6da4' : 'transparent', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }),
+    tab: (active: boolean): React.CSSProperties => ({ padding: '10px 18px', fontSize: 13, fontWeight: 600, color: active ? '#2e6da4' : '#4a5568', cursor: 'pointer', borderBottom: active ? '2px solid #2e6da4' : '2px solid transparent', marginBottom: -2, background: 'none', border: 'none', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }),
   }
 
   // ── LOGIN SCREEN ──────────────────────────────────────────────────────
