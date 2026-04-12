@@ -661,6 +661,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+        )}
 
         {/* ── DRILL DOWN TAB ── */}
         {activeTab === 'drill' && selectedBorrower && (
