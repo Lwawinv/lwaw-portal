@@ -62,10 +62,13 @@ function DocOrderForm() {
         <Field label="P&I Payment ($)"><input style={s.input} value={form.piPayment || ''} onChange={e => set('piPayment', e.target.value)} placeholder="1,557.71" /></Field>
         <Field label="Interest Rate (%)"><input style={s.input} value={form.interestRate || ''} onChange={e => set('interestRate', e.target.value)} placeholder="10.5" /></Field>
       </div>
-      <div style={s.grid3}>
+      <div style={s.grid2}>
         <Field label="Term (years)"><input style={s.input} value={form.termYears || '30'} onChange={e => set('termYears', e.target.value)} /></Field>
-        <Field label="Note Date"><input style={s.input} type="date" value={form.noteDate || ''} onChange={e => set('noteDate', e.target.value)} /></Field>
         <Field label="First Payment Date"><input style={s.input} type="date" value={form.firstPayment || ''} onChange={e => set('firstPayment', e.target.value)} /></Field>
+      </div>
+      <div style={s.grid2}>
+        <Field label="Note Date"><input style={s.input} type="date" value={form.noteDate || ''} onChange={e => set('noteDate', e.target.value)} /></Field>
+        <Field label="Maturity Date"><input style={s.input} type="date" value={form.maturityDate || ''} onChange={e => set('maturityDate', e.target.value)} /></Field>
       </div>
       <Field label="Collateral Property Address"><input style={s.input} value={form.collateral || ''} onChange={e => set('collateral', e.target.value)} /></Field>
       <div style={{ display: 'flex', gap: 24, marginBottom: 14 }}>
