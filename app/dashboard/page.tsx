@@ -347,13 +347,13 @@ export default function DashboardPage() {
     .filter(b => entityFilter === 'All Entities' || b.entity === entityFilter)
     .filter(b => !search || b.address.toLowerCase().includes(search.toLowerCase()) || b.borrower_name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
-      let av: any, bv: any
+      let av, bv
       if (sortCol === 'due_day') { av = parseInt(a.due_day); bv = parseInt(b.due_day) }
       else if (sortCol === 'address') { av = a.address; bv = b.address }
       else if (sortCol === 'payment_amount') { av = parseFloat(a.payment_amount.replace(/[$,]/g,'')); bv = parseFloat(b.payment_amount.replace(/[$,]/g,'')) }
       else if (sortCol === 'status') { av = getPaymentStatus(a).status; bv = getPaymentStatus(b).status }
       else if (sortCol === 'entity') { av = a.entity; bv = b.entity }
-      else { av = (a as any)[sortCol]; bv = (b as any)[sortCol] }
+      else { av = a[sortCol]; bv = b[sortCol] }
       if (av < bv) return sortDir === 'asc' ? -1 : 1
       if (av > bv) return sortDir === 'asc' ? 1 : -1
       return 0
