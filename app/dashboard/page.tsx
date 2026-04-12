@@ -779,8 +779,6 @@ export default function DashboardPage() {
                 </table>
               </div>
             </div>
-          </div>
-
             {INSURANCE_DATA.filter(i => i.paid_off).length > 0 && (
               <div style={{ marginTop: 24, background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden', opacity: 0.6 }}>
                 <div style={{ padding: '12px 20px', borderBottom: '1px solid #dce4ed', background: '#f0f4f8', display: 'flex', alignItems: 'center', gap: 10 }}>
