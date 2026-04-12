@@ -36,6 +36,21 @@ function hashPw(pw: string): string {
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const ENTITIES = ['All Entities','A2DSTX, LLC','A2PI, LLC','A2AF2, LLC','A2BH, LLC','A2BA, LLC','A Squared Property Investments, LLC','Equity Trust Company Custodian FBO Arick Wray IRA']
 
+// ── ESCROW DATA ────────────────────────────────────────────────────────
+const ESCROW_DATA = [
+  { entity: 'A2PI, LLC',          address: '4214 SW 38th',      db_id: 'juan-4214',      pi: 1715.63, tax: 316.35, ins: 109.63, total: 2141.61, balance: 2992.23 },
+  { entity: 'A2PI, LLC',          address: '1937 S Roosevelt',  db_id: 'reina-1937',     pi: 1239.30, tax: 173.28, ins: 210.67, total: 1623.25, balance: 6042.85 },
+  { entity: 'A2PI, LLC',          address: '3311 NE 20th',      db_id: 'griselda-3311',  pi: 1240.86, tax: 227.42, ins: 134.35, total: 1602.63, balance: 3583.79 },
+  { entity: 'A2BH, LLC',          address: '3309 NE 20th',      db_id: 'perla-3309',     pi: 894.44,  tax: 194.09, ins: 225.51, total: 1314.04, balance: 2812.54 },
+  { entity: 'A2BH, LLC',          address: '1508 N Washington', db_id: 'ochoa-1508',     pi: 994.03,  tax: 84.63,  ins: 163.09, total: 1241.75, balance: 1043.14 },
+  { entity: 'A2BH, LLC',          address: '1408 Heather',      db_id: 'nancy-1408',     pi: 1285.45, tax: 204.73, ins: 294.33, total: 1784.51, balance: 2558.06 },
+  { entity: 'A2BH, LLC',          address: '1933 S Highland',   db_id: 'ochoa-1933',     pi: 1276.26, tax: 244.85, ins: 205.93, total: 1727.04, balance: 597.96  },
+  { entity: 'A2BH, LLC',          address: '2504 Bivins',       db_id: 'david-2504',     pi: 1281.20, tax: 242.36, ins: 228.50, total: 1752.06, balance: 4402.89 },
+  { entity: 'A2DSTX, LLC',        address: '4312 Bonham',       db_id: 'angel-4312',     pi: 1619.68, tax: 212.03, ins: 181.81, total: 2013.52, balance: 3966.05 },
+  { entity: 'A2BA Finance, LLC',   address: '1908 Seminole',     db_id: 'alicia-1908',    pi: 1309.28, tax: 170.42, ins: 181.92, total: 1661.62, balance: 2125.88 },
+  { entity: 'A2BH, LLC',          address: '1920 Manhattan',    db_id: 'lidice-1920',    pi: 1096.72, tax: 229.86, ins: 183.56, total: 1532.66, balance: null    },
+]
+
 // ── TODO DATA ─────────────────────────────────────────────────────────
 const TODO_CATEGORIES = [
   { id: 'website', label: 'Website & Portal', accent: '#0ea5e9', items: [
@@ -217,23 +232,60 @@ export default function DashboardPage() {
   const [modalLoading, setModalLoading] = useState(false)
   const [modalMsg, setModalMsg] = useState('')
 
+  // New Loan modal (Brad/superadmin only)
+  const [newLoanOpen, setNewLoanOpen] = useState(false)
+  const [nlAddress, setNlAddress] = useState('')
+  const [nlBorrower, setNlBorrower] = useState('')
+  const [nlEntity, setNlEntity] = useState('A Squared Property Investments, LLC')
+  const [nlAmount, setNlAmount] = useState('')
+  const [nlRate, setNlRate] = useState('')
+  const [nlTerm, setNlTerm] = useState('30')
+  const [nlStart, setNlStart] = useState(new Date().toISOString().split('T')[0])
+  const [nlEscrow, setNlEscrow] = useState('none')
+  const [nlBank, setNlBank] = useState('')
+  const [nlAcct, setNlAcct] = useState('')
+  const [nlMsg, setNlMsg] = useState('')
+
+  // New Loan modal state (Brad only)
+  const [newLoanOpen, setNewLoanOpen] = useState(false)
+  const [nlAddress, setNlAddress] = useState('')
+  const [nlBorrower, setNlBorrower] = useState('')
+  const [nlEntity, setNlEntity] = useState('A Squared Property Investments, LLC')
+  const [nlAmount, setNlAmount] = useState('')
+  const [nlRate, setNlRate] = useState('')
+  const [nlTerm, setNlTerm] = useState('30')
+  const [nlStart, setNlStart] = useState(new Date().toISOString().split('T')[0])
+  const [nlEscrow, setNlEscrow] = useState('none')
+  const [nlBank, setNlBank] = useState('')
+  const [nlAcct, setNlAcct] = useState('')
+  const [nlMsg, setNlMsg] = useState('')
+  const [nlLoading, setNlLoading] = useState(false)
+
   // Todo
   const [todos, setTodos] = useState(TODO_CATEGORIES)
+
+  // Escrow expanded entities
+  const [escrowExpanded, setEscrowExpanded] = useState<Record<string, boolean>>({})
+
+  // Amortization collections (YTD/MTD from confirmed amort rows)
+  const [amortCollections, setAmortCollections] = useState<any[]>([])
 
   useEffect(() => { if (adminUser) loadData() }, [adminUser, month, year])
 
   async function loadData() {
     const { supabase } = await import('@/lib/supabase')
-    const [{ data: bs }, { data: logs }, { data: pmts }, { data: lds }] = await Promise.all([
+    const [{ data: bs }, { data: logs }, { data: pmts }, { data: lds }, { data: amort }] = await Promise.all([
       supabase.from('borrowers').select('*').eq('active', true).order('address'),
       supabase.from('payment_log').select('*').order('created_at', { ascending: false }),
       supabase.from('payment_history').select('*').order('payment_date', { ascending: false }),
       supabase.from('loan_details').select('*'),
+      supabase.from('amortization_schedule').select('borrower_id,payment_date,principal,interest,total_payment,is_confirmed').eq('is_confirmed', true),
     ])
     if (bs) setBorrowers(bs)
     if (logs) setPaymentLog(logs)
     if (pmts) setAllPayments(pmts)
     if (lds) setLoanDetails(lds)
+    if (amort) setAmortCollections(amort)
   }
 
   async function handleLogin() {
@@ -334,6 +386,25 @@ export default function DashboardPage() {
   const paidCount = borrowers.filter(b => getPaymentStatus(b).status === 'paid').length
   const overdueCount = borrowers.filter(b => getPaymentStatus(b).status === 'overdue').length
 
+  // Amortization-based MTD/YTD collections (from confirmed amort rows)
+  const amortMTD = amortCollections.filter(r => r.payment_date >= monthStart && r.payment_date <= monthEnd)
+  const amortYTD = amortCollections.filter(r => r.payment_date >= yearStart && r.payment_date <= yearEnd)
+  const amortMTDPrincipal = amortMTD.reduce((s, r) => s + (r.principal || 0), 0)
+  const amortMTDInterest  = amortMTD.reduce((s, r) => s + (r.interest || 0), 0)
+  const amortMTDTotal     = amortMTD.reduce((s, r) => s + (r.total_payment || 0), 0)
+  const amortYTDPrincipal = amortYTD.reduce((s, r) => s + (r.principal || 0), 0)
+  const amortYTDInterest  = amortYTD.reduce((s, r) => s + (r.interest || 0), 0)
+  const amortYTDTotal     = amortYTD.reduce((s, r) => s + (r.total_payment || 0), 0)
+
+  // Escrow entity totals
+  const escrowEntities = [...new Set(ESCROW_DATA.map(e => e.entity))]
+  const escrowByEntity = escrowEntities.map(entity => {
+    const props = ESCROW_DATA.filter(e => e.entity === entity)
+    const totalBal = props.reduce((s, p) => s + (p.balance || 0), 0)
+    const totalPmt = props.reduce((s, p) => s + p.total, 0)
+    return { entity, props, totalBal, totalPmt }
+  })
+
   // Sorted + filtered borrowers
   const filteredBorrowers = borrowers
     .filter(b => entityFilter === 'All Entities' || b.entity === entityFilter)
@@ -403,6 +474,14 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <Link href="/portal" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>Borrower Portal</Link>
           <Link href="/" style={{ fontSize: 12, color: '#8b949e', textDecoration: 'none' }}>Public Site</Link>
+          {adminUser?.role === 'superadmin' && (
+            <button onClick={() => { setNewLoanOpen(true); setNlMsg('') }} style={{ background: '#15803d', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+              + New Loan
+            </button>
+          )}
+          {adminUser?.role === 'superadmin' && (
+            <button onClick={() => { setNewLoanOpen(true); setNlMsg('') }} style={{ background: '#15803d', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>+ New Loan</button>
+          )}
           <button onClick={() => { setAdminUser(null); setScreen('login') }} style={{ background: 'none', border: '1px solid #30363d', padding: '5px 12px', borderRadius: 4, fontSize: 12, cursor: 'pointer', color: '#8b949e', fontFamily: "'DM Sans', sans-serif" }}>Log Out</button>
         </div>
       </nav>
@@ -413,6 +492,7 @@ export default function DashboardPage() {
           {[
             ['overview', 'Overview'],
             ['payments', 'Payments'],
+            ['escrow', '🏦 Escrow'],
             adminUser?.role === 'superadmin' ? ['brad', 'Brad View'] : null,
             adminUser?.role === 'superadmin' ? ['insurance', 'Insurance'] : null,
             adminUser?.role === 'superadmin' ? ['todo', `To-Do (${totalDone}/${totalItems})`] : null,
@@ -451,41 +531,36 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* MTD/YTD by entity */}
-            {entityTotals.length > 0 && (
-              <div style={{ ...s.card, marginBottom: 22 }}>
-                <div style={s.label}>Collections by Entity — {MONTHS[month]} {year}</div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead><tr style={{ background: '#f7f9fc' }}>
-                      {['Entity', 'MTD Total', 'MTD Principal', 'MTD Interest', 'YTD Total', 'YTD Principal', 'YTD Interest'].map(h => <th key={h} style={{ padding: '8px 14px', fontSize: 11, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: h === 'Entity' ? 'left' : 'right', borderBottom: '1px solid #dce4ed' }}>{h}</th>)}
-                    </tr></thead>
-                    <tbody>
-                      {entityTotals.map((e, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid #f0f4f8' }}>
-                          <td style={{ padding: '8px 14px', fontSize: 13, fontWeight: 600 }}>{e.entity}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#15803d', fontWeight: 600 }}>{fmt(e.mtd)}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 12, textAlign: 'right', color: '#2e6da4' }}>{fmt(e.mtdP)}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 12, textAlign: 'right', color: '#4a5568' }}>{fmt(e.mtdI)}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#15803d' }}>{fmt(e.ytd)}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 12, textAlign: 'right', color: '#2e6da4' }}>{fmt(e.ytdP)}</td>
-                          <td style={{ padding: '8px 14px', fontSize: 12, textAlign: 'right', color: '#4a5568' }}>{fmt(e.ytdI)}</td>
-                        </tr>
-                      ))}
-                      <tr style={{ borderTop: '2px solid #dce4ed', background: '#f7f9fc' }}>
-                        <td style={{ padding: '8px 14px', fontSize: 13, fontWeight: 700 }}>TOTAL</td>
-                        <td style={{ padding: '8px 14px', fontSize: 14, textAlign: 'right', color: '#15803d', fontWeight: 700 }}>{fmt(mtdTotal)}</td>
-                        <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#2e6da4', fontWeight: 600 }}>{fmt(mtdPrincipal)}</td>
-                        <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#4a5568', fontWeight: 600 }}>{fmt(mtdInterest)}</td>
-                        <td style={{ padding: '8px 14px', fontSize: 14, textAlign: 'right', color: '#15803d', fontWeight: 700 }}>{fmt(ytdTotal)}</td>
-                        <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#2e6da4', fontWeight: 600 }}>{fmt(ytdPrincipal)}</td>
-                        <td style={{ padding: '8px 14px', fontSize: 13, textAlign: 'right', color: '#4a5568', fontWeight: 600 }}>{fmt(ytdInterest)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            {/* Collections from confirmed amortization rows */}
+            <div style={{ ...s.card, marginBottom: 22 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <div style={s.label}>Collections — {MONTHS[month]} {year}</div>
+                <span style={{ fontSize: 11, color: '#9ca3af' }}>Source: confirmed amortization schedule</span>
               </div>
-            )}
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead><tr style={{ background: '#f7f9fc' }}>
+                    {['Period','Principal','Interest','Total Collected'].map(h => (
+                      <th key={h} style={{ padding: '9px 14px', fontSize: 11, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: h === 'Period' ? 'left' : 'right', borderBottom: '1px solid #dce4ed' }}>{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #f0f4f8' }}>
+                      <td style={{ padding: '11px 14px', fontSize: 13, fontWeight: 600 }}>MTD — {MONTHS[month]}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 13, textAlign: 'right', color: '#2e6da4', fontWeight: 600 }}>{fmt(amortMTDPrincipal)}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 13, textAlign: 'right', color: '#64748b' }}>{fmt(amortMTDInterest)}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 15, textAlign: 'right', color: '#15803d', fontWeight: 700 }}>{fmt(amortMTDTotal)}</td>
+                    </tr>
+                    <tr style={{ background: '#f7f9fc' }}>
+                      <td style={{ padding: '11px 14px', fontSize: 13, fontWeight: 600 }}>YTD — {year}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 13, textAlign: 'right', color: '#2e6da4', fontWeight: 600 }}>{fmt(amortYTDPrincipal)}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 13, textAlign: 'right', color: '#64748b' }}>{fmt(amortYTDInterest)}</td>
+                      <td style={{ padding: '11px 14px', fontSize: 15, textAlign: 'right', color: '#15803d', fontWeight: 700 }}>{fmt(amortYTDTotal)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
             {/* Recent activity */}
             <div style={s.card}>
@@ -560,6 +635,10 @@ export default function DashboardPage() {
         {/* ── DRILL DOWN TAB ── */}
         {activeTab === 'drill' && selectedBorrower && (
           <div>
+            <button onClick={() => { setSelectedBorrower(null); setActiveTab('payments') }}
+              style={{ marginBottom: 16, background: 'none', border: '1px solid #dce4ed', borderRadius: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#2e6da4', fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
+              ← Back to Payments
+            </button>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div style={s.card}>
                 <div style={s.label}>Loan Details</div>
@@ -571,7 +650,7 @@ export default function DashboardPage() {
                     {[
                       { label: 'Original Amount', val: fmt(drillLoan.loan_amount) },
                       { label: 'Current Balance', val: fmt(drillLoan.current_balance) },
-                      { label: 'Rate', val: drillLoan.rate + '%' },
+                      { label: 'Rate', val: (drillLoan.rate * 100).toFixed(3).replace(/\.?0+$/, '') + '%' },
                       { label: 'Term', val: drillLoan.term_years + ' years' },
                       { label: 'Scheduled Pmt', val: fmt(drillLoan.scheduled_payment) },
                       { label: 'Payments Made', val: drillLoan.payments_made },
@@ -609,35 +688,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden' }}>
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid #dce4ed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Payment History ({drillPayments.length} records)</h4>
-              </div>
-              <div style={{ overflowX: 'auto', maxHeight: 400, overflowY: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0 }}>
-                    <tr style={{ background: '#f7f9fc' }}>
-                      {['#','Date','Total','Principal','Interest','Balance','Source'].map(h => <th key={h} style={{ padding: '8px 12px', fontSize: 11, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: h === '#' ? 'left' : 'right', borderBottom: '1px solid #dce4ed' }}>{h}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {drillPayments.map((p, i) => (
-                      <tr key={p.id} style={{ borderBottom: '1px solid #f0f4f8', background: p.source === 'portal' ? '#f5f3ff' : 'transparent' }}>
-                        <td style={{ padding: '7px 12px', fontSize: 12, color: '#2e6da4' }}>#{p.payment_num || '—'}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmtDate(p.payment_date)}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right', color: '#15803d', fontWeight: 600 }}>{fmt(p.total_paid)}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmt(p.principal)}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmt(p.interest)}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 12, textAlign: 'right' }}>{fmt(p.ending_balance)}</td>
-                        <td style={{ padding: '7px 12px', fontSize: 11, textAlign: 'right', color: p.source === 'portal' ? '#6d28d9' : '#4a5568' }}>{p.source}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Amortization Schedule in drill view */}
+            {/* Amortization Schedule (confirmed = historical payments, projected = future) */}
             <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden', marginTop: 16 }}>
               <div style={{ padding: '12px 18px', borderBottom: '1px solid #dce4ed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Amortization Schedule</h4>
@@ -748,7 +799,95 @@ export default function DashboardPage() {
           </div>
         )}
 
-                {/* ── BRAD VIEW TAB ── */}
+        {/* ── ESCROW TAB ── */}
+        {activeTab === 'escrow' && (
+          <div>
+            {/* Summary stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14, marginBottom: 22 }}>
+              {[
+                { label: 'Total Escrow Balance', val: fmt(ESCROW_DATA.reduce((s, e) => s + (e.balance || 0), 0)), color: '#15803d', bg: '#f0fdf4' },
+                { label: 'Escrowed Properties', val: ESCROW_DATA.length, color: '#2e6da4', bg: '#e8f2fb' },
+                { label: 'Entities with Escrow', val: escrowByEntity.length, color: '#1c2026', bg: '#f7f9fc' },
+                { label: 'Total Monthly Required', val: fmt(ESCROW_DATA.reduce((s, e) => s + e.total, 0)), color: '#4a5568', bg: '#f7f9fc' },
+              ].map((stat, i) => (
+                <div key={i} style={{ background: stat.bg, border: '1px solid #dce4ed', borderRadius: 8, padding: '14px 18px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, marginBottom: 6 }}>{stat.label}</div>
+                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: stat.color }}>{stat.val}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Entity accordion */}
+            {escrowByEntity.map(({ entity, props, totalBal, totalPmt }) => (
+              <div key={entity} style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, marginBottom: 12, overflow: 'hidden' }}>
+                {/* Entity header — clickable to expand */}
+                <div
+                  onClick={() => setEscrowExpanded(prev => ({ ...prev, [entity]: !prev[entity] }))}
+                  style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: escrowExpanded[entity] ? '#f0f7ff' : '#fff', borderBottom: escrowExpanded[entity] ? '1px solid #dce4ed' : 'none' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: escrowExpanded[entity] ? '#2e6da4' : '#1c2026' }}>
+                      {escrowExpanded[entity] ? '▼' : '▶'} {entity.replace(', LLC', '').replace('A Squared Property Investments', 'A Squared').replace('Finance', 'Fin.')}
+                    </span>
+                    <span style={{ fontSize: 11, color: '#9ca3af' }}>{props.length} {props.length === 1 ? 'property' : 'properties'}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: '#9ca3af', fontWeight: 600 }}>Mo. Required</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#4a5568' }}>{fmt(totalPmt)}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: '#9ca3af', fontWeight: 600 }}>Escrow Balance</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: '#15803d' }}>{fmt(totalBal)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded property rows */}
+                {escrowExpanded[entity] && (
+                  <div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ background: '#f7f9fc' }}>
+                          {['Property', 'P&I', 'Taxes', 'Insurance', 'Total Required', 'Escrow Balance'].map(h => (
+                            <th key={h} style={{ padding: '8px 14px', fontSize: 10, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, textAlign: h === 'Property' ? 'left' : 'right', borderBottom: '1px solid #dce4ed' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {props.map((prop, i) => (
+                          <tr key={i} style={{ borderBottom: '1px solid #f0f4f8' }}>
+                            <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 600 }}>{prop.address}</td>
+                            <td style={{ padding: '10px 14px', fontSize: 12, textAlign: 'right', color: '#2e6da4' }}>{fmt(prop.pi)}</td>
+                            <td style={{ padding: '10px 14px', fontSize: 12, textAlign: 'right', color: '#64748b' }}>{fmt(prop.tax)}</td>
+                            <td style={{ padding: '10px 14px', fontSize: 12, textAlign: 'right', color: '#64748b' }}>{fmt(prop.ins)}</td>
+                            <td style={{ padding: '10px 14px', fontSize: 13, textAlign: 'right', fontWeight: 600 }}>{fmt(prop.total)}</td>
+                            <td style={{ padding: '10px 14px', fontSize: 13, textAlign: 'right', fontWeight: 700, color: prop.balance && prop.balance > 0 ? '#15803d' : '#9ca3af' }}>
+                              {prop.balance != null ? fmt(prop.balance) : '—'}
+                            </td>
+                          </tr>
+                        ))}
+                        {/* Entity subtotal */}
+                        <tr style={{ background: '#f0f7ff', borderTop: '1px solid #dce4ed' }}>
+                          <td style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: '#2e6da4' }}>Subtotal</td>
+                          <td colSpan={3} style={{ padding: '9px 14px' }}></td>
+                          <td style={{ padding: '9px 14px', fontSize: 13, textAlign: 'right', fontWeight: 700, color: '#2e6da4' }}>{fmt(totalPmt)}</td>
+                          <td style={{ padding: '9px 14px', fontSize: 13, textAlign: 'right', fontWeight: 700, color: '#15803d' }}>{fmt(totalBal)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginTop: 16 }}>
+              Balances from Escrow Tracking Sheet · Updated April 2026 · Read-only view
+            </div>
+          </div>
+        )}
+
+        {/* ── BRAD VIEW TAB ── */}
         {activeTab === 'brad' && adminUser?.role === 'superadmin' && (
           <div style={{ ...s.card, textAlign: 'center', padding: '60px 40px' }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🏗️</div>
@@ -772,6 +911,68 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: '1px solid #dce4ed', color: '#4a5568', padding: '10px 18px', borderRadius: 5, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
               <button onClick={submitPayment} disabled={modalLoading} style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: modalLoading ? .7 : 1 }}>{modalLoading ? 'Posting...' : '✓ Post & Notify Brad'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── NEW LOAN MODAL (Brad only) ── */}
+      {newLoanOpen && (
+        <div onClick={e => { if (e.target === e.currentTarget) setNewLoanOpen(false) }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: '28px 32px', width: '100%', maxWidth: 560, boxShadow: '0 20px 60px rgba(0,0,0,.2)', margin: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, margin: 0 }}>New Loan Transaction</h3>
+              <button onClick={() => setNewLoanOpen(false)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#9ca3af' }}>×</button>
+            </div>
+            {nlMsg && <div style={{ background: nlMsg.startsWith('✓') ? '#f0fdf4' : '#fff5f5', color: nlMsg.startsWith('✓') ? '#15803d' : '#b91c1c', border: `1px solid ${nlMsg.startsWith('✓') ? '#bbf7d0' : '#fecaca'}`, borderRadius: 5, padding: '8px 12px', fontSize: 13, marginBottom: 14 }}>{nlMsg}</div>}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ gridColumn: '1/-1' }}><label style={s.label}>Property Address</label><input style={s.input} value={nlAddress} onChange={e => setNlAddress(e.target.value)} placeholder="4109 S Polk, Amarillo TX 79110"/></div>
+              <div style={{ gridColumn: '1/-1' }}><label style={s.label}>Borrower Name</label><input style={s.input} value={nlBorrower} onChange={e => setNlBorrower(e.target.value)} placeholder="Full legal name(s)"/></div>
+              <div style={{ gridColumn: '1/-1' }}>
+                <label style={s.label}>Entity (Lender)</label>
+                <select style={s.input} value={nlEntity} onChange={e => setNlEntity(e.target.value)}>
+                  <option>A Squared Property Investments, LLC</option>
+                  <option>A2PI, LLC</option>
+                  <option>A2AF2, LLC</option>
+                  <option>A2BH, LLC</option>
+                  <option>A2BA Finance, LLC</option>
+                  <option>A2DSTX, LLC</option>
+                  <option>Equity Trust Company Custodian FBO Arick Wray IRA</option>
+                </select>
+              </div>
+              <div><label style={s.label}>Loan Amount ($)</label><input style={s.input} type="number" step="0.01" value={nlAmount} onChange={e => setNlAmount(e.target.value)} placeholder="150000.00"/></div>
+              <div><label style={s.label}>Interest Rate (%)</label><input style={s.input} type="number" step="0.01" value={nlRate} onChange={e => setNlRate(e.target.value)} placeholder="10.00"/></div>
+              <div><label style={s.label}>Term (years)</label><input style={s.input} type="number" value={nlTerm} onChange={e => setNlTerm(e.target.value)} placeholder="30"/></div>
+              <div><label style={s.label}>First Payment Date</label><input style={s.input} type="date" value={nlStart} onChange={e => setNlStart(e.target.value)}/></div>
+              <div>
+                <label style={s.label}>Escrow</label>
+                <select style={s.input} value={nlEscrow} onChange={e => setNlEscrow(e.target.value)}>
+                  <option value="none">No Escrow</option>
+                  <option value="taxes_and_insurance">Taxes & Insurance</option>
+                  <option value="taxes_only">Taxes Only</option>
+                </select>
+              </div>
+              <div><label style={s.label}>Bank</label><input style={s.input} value={nlBank} onChange={e => setNlBank(e.target.value)} placeholder="Interstate State Bank (ISB)"/></div>
+              <div><label style={s.label}>Account Number</label><input style={s.input} value={nlAcct} onChange={e => setNlAcct(e.target.value)} placeholder="Account #"/></div>
+            </div>
+            <div style={{ marginTop: 6, padding: '12px 14px', background: '#f7f9fc', borderRadius: 6, fontSize: 12, color: '#4a5568' }}>
+              <strong>Next steps after saving:</strong> Add borrower record to Supabase, update Note Tracking spreadsheet, add amortization tab, seed amortization schedule to DB.
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+              <button onClick={() => setNewLoanOpen(false)} style={{ background: 'none', border: '1px solid #dce4ed', color: '#4a5568', padding: '10px 18px', borderRadius: 5, fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+              <button
+                onClick={() => {
+                  if (!nlAddress || !nlBorrower || !nlAmount || !nlRate) { setNlMsg('Please fill in address, borrower, amount, and rate.'); return }
+                  const rate = parseFloat(nlRate) / 100
+                  const mo = rate / 12
+                  const n = parseFloat(nlTerm) * 12
+                  const pi = parseFloat(nlAmount) * mo * Math.pow(1 + mo, n) / (Math.pow(1 + mo, n) - 1)
+                  setNlMsg(`✓ Loan summary: ${nlBorrower} | ${nlAddress} | $${parseFloat(nlAmount).toLocaleString()} @ ${nlRate}% | P&I = $${pi.toFixed(2)}/mo. Record this in your Note Tracking spreadsheet and Supabase to complete setup.`)
+                }}
+                disabled={nlLoading}
+                style={{ flex: 1, background: '#15803d', color: '#fff', border: 'none', padding: '10px', borderRadius: 5, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                Calculate & Review
+              </button>
             </div>
           </div>
         </div>
