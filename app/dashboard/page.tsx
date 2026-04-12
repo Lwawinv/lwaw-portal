@@ -372,11 +372,19 @@ export default function DashboardPage() {
   }).filter(e => e.mtd > 0 || e.ytd > 0)
 
   function getPaymentStatus(b: Borrower) {
+    // Check payment_log first (manually posted by Arick)
     const logged = paymentLog.find(p => {
       const d = new Date(p.payment_date)
       return p.borrower_id === b.id && d.getFullYear() === year && d.getMonth() === month
     })
     if (logged) return { status: 'paid', amount: logged.amount }
+    // Also check confirmed amortization rows for this month
+    const amortPaid = amortCollections.find(r => {
+      if (r.borrower_id !== b.id) return false
+      const d = new Date(r.payment_date)
+      return d.getFullYear() === year && d.getMonth() === month
+    })
+    if (amortPaid) return { status: 'paid', amount: amortPaid.total_payment }
     const dueNum = parseInt(b.due_day)
     const isPast = now.getFullYear() > year || (now.getFullYear() === year && now.getMonth() > month) ||
       (now.getFullYear() === year && now.getMonth() === month && now.getDate() > dueNum + 5)
@@ -613,7 +621,7 @@ export default function DashboardPage() {
                         <td style={{ padding: '9px 12px', fontSize: 11, color: '#4a5568' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','A²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
                         <td style={{ padding: '9px 12px', fontSize: 13, fontWeight: 600 }}>{b.payment_amount}</td>
                         <td style={{ padding: '9px 12px' }}>
-                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>✓ Paid{amount ? ' $' + amount : ''}</span>
+                          {status === 'paid' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0fdf4', color: '#15803d' }}>✓ Paid{amount ? ' ' + fmt(amount) : ''}</span>
                           : status === 'overdue' ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#fff5f5', color: '#b91c1c' }}>⚠ Overdue</span>
                           : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f7f9fc', color: '#4a5568' }}>• Unpaid</span>}
                         </td>
@@ -691,7 +699,7 @@ export default function DashboardPage() {
             {/* Amortization Schedule (confirmed = historical payments, projected = future) */}
             <div style={{ background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden', marginTop: 16 }}>
               <div style={{ padding: '12px 18px', borderBottom: '1px solid #dce4ed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Amortization Schedule</h4>
+                <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Payment History / Amortization Schedule</h4>
                 <span style={{ fontSize: 12, color: '#4a5568' }}>
                   <span style={{ display: 'inline-block', width: 10, height: 10, background: '#92D050', borderRadius: 2, marginRight: 4 }}></span>Confirmed
                   <span style={{ display: 'inline-block', width: 10, height: 10, background: '#D1FAE5', borderRadius: 2, marginLeft: 10, marginRight: 4 }}></span>Summary
