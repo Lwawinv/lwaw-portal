@@ -168,8 +168,8 @@ const CHECKLIST = [
 function NewDealChecklist() {
 const [checked, setChecked] = useState<number[]>([])
   const [dealName, setDealName] = useState('')
-const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
-const phaseSet: Record<string, boolean> = {}
+  const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
+  const phaseSet: Record<string, boolean> = {}
   CHECKLIST.forEach(i => { phaseSet[i.phase] = true })
   const phases = Object.keys(phaseSet)
   const pct = Math.round(checked.length/CHECKLIST.length*100)
