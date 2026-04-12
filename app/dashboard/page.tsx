@@ -155,16 +155,16 @@ function DashAmortizationTable({ borrowerId }: { borrowerId: string }) {
 
 // ── INSURANCE DATA ────────────────────────────────────────────────────────────
 const INSURANCE_DATA = [
-  { address: '821 N Apache', entity: 'A Squared', borrower: 'Carlos Perez', ins_exp: '2024-10-25', days_left: -532, escrow: 'NO', status: 'expired' },
-  { address: '4008 S Tyler', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2024-12-11', days_left: -485, escrow: 'NO', status: 'expired' },
-  { address: '3611 & 3613 SE 13th', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-07-23', days_left: -261, escrow: 'YES', status: 'expired' },
-  { address: '207 Mississippi', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2025-10-01', days_left: -191, escrow: 'NO', status: 'expired' },
-  { address: '609 & 611 N Mirror', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-10-17', days_left: -175, escrow: 'TAX', status: 'expired' },
-  { address: '805 S Louisiana', entity: 'A Squared', borrower: 'Multiple', ins_exp: '2025-11-28', days_left: -133, escrow: 'NO', status: 'expired' },
-  { address: '409 Forest', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-01-08', days_left: -92, escrow: 'NO', status: 'expired' },
-  { address: '1601 Hillcrest', entity: 'A2AF2', borrower: 'Garcia/Deleon', ins_exp: '2026-03-08', days_left: -33, escrow: 'YES', status: 'expired' },
+  { address: '821 N Apache', entity: 'A Squared', borrower: 'Carlos Perez', ins_exp: '2024-10-25', days_left: -532, escrow: 'NO', status: 'expired' , paid_off: true },
+  { address: '4008 S Tyler', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2024-12-11', days_left: -485, escrow: 'NO', status: 'expired' , paid_off: true },
+  { address: '3611 & 3613 SE 13th', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-07-23', days_left: -261, escrow: 'YES', status: 'expired' , paid_off: true },
+  { address: '207 Mississippi', entity: 'A Squared', borrower: 'Eli Huhem', ins_exp: '2025-10-01', days_left: -191, escrow: 'NO', status: 'expired' , paid_off: true },
+  { address: '609 & 611 N Mirror', entity: 'A2DSTX', borrower: 'Multiple', ins_exp: '2025-10-17', days_left: -175, escrow: 'TAX', status: 'expired' , paid_off: true },
+  { address: '805 S Louisiana', entity: 'A Squared', borrower: 'Multiple', ins_exp: '2025-11-28', days_left: -133, escrow: 'NO', status: 'expired' , paid_off: true },
+  { address: '409 Forest', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-01-08', days_left: -92, escrow: 'NO', status: 'expired' , paid_off: true },
+  { address: '1601 Hillcrest', entity: 'A2AF2', borrower: 'Garcia/Deleon', ins_exp: '2026-03-08', days_left: -33, escrow: 'YES', status: 'expired' , paid_off: true },
   { address: '1511 S Woodland', entity: 'A2DSTX', borrower: 'Adriana Colina', ins_exp: '2026-03-11', days_left: -30, escrow: 'NO', status: 'expired' },
-  { address: '404 S Crockett', entity: 'A2BH', borrower: 'Cindy/Sindy', ins_exp: '2026-03-24', days_left: -17, escrow: 'YES', status: 'expired' },
+  { address: '404 S Crockett', entity: 'A2BH', borrower: 'Cindy/Sindy', ins_exp: '2026-03-24', days_left: -17, escrow: 'YES', status: 'expired' , paid_off: true },
   { address: '3813 S Hughes', entity: 'A2PI', borrower: 'Brundage', ins_exp: '2026-04-22', days_left: 12, escrow: 'NO', status: 'critical' },
   { address: '2504 Bivins', entity: 'A2BH', borrower: 'David Flores', ins_exp: '2026-05-05', days_left: 25, escrow: 'YES', status: 'critical' },
   { address: '3204 Spring', entity: 'A2AF2', borrower: 'Zane Rojas', ins_exp: '2026-05-06', days_left: 26, escrow: 'NO', status: 'critical' },
@@ -174,11 +174,11 @@ const INSURANCE_DATA = [
   { address: '4109 S Polk', entity: 'A Squared', borrower: 'Jordan Rentals', ins_exp: '2026-06-02', days_left: 53, escrow: 'NO', status: 'warning' },
   { address: '1410 S Ong/4012 Gables', entity: 'A2BA', borrower: 'LLC', ins_exp: '2026-06-02', days_left: 53, escrow: 'NO', status: 'warning' },
   { address: '4214 SW 38th', entity: 'A2PI', borrower: 'Juan San Martin', ins_exp: '2026-07-06', days_left: 87, escrow: 'YES', status: 'warning' },
-  { address: '700 N Houston', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-07-11', days_left: 92, escrow: 'NO', status: 'ok' },
+  { address: '700 N Houston', entity: 'A Squared', borrower: 'Borrower', ins_exp: '2026-07-11', days_left: 92, escrow: 'NO', status: 'ok' , paid_off: true },
   { address: '1937 S Roosevelt', entity: 'A2PI', borrower: 'Jesus Macias', ins_exp: '2026-08-05', days_left: 117, escrow: 'YES', status: 'ok' },
   { address: '1908 Seminole', entity: 'A2BA', borrower: 'Borrower', ins_exp: '2026-08-08', days_left: 120, escrow: 'YES', status: 'ok' },
   { address: '3311 NE 20th', entity: 'A2PI', borrower: 'Pascual Sanchez', ins_exp: '2026-08-12', days_left: 124, escrow: 'YES', status: 'ok' },
-  { address: '1920 Manhattan', entity: 'A2BH', borrower: 'Lidice', ins_exp: '2026-09-04', days_left: 147, escrow: 'YES', status: 'ok' },
+  { address: '1920 Manhattan', entity: 'A2BH', borrower: 'Lidice', ins_exp: '2026-09-04', days_left: 147, escrow: 'YES', status: 'ok' , paid_off: true },
   { address: '2602 Olive', entity: 'A2BA', borrower: 'Zachary Lopez', ins_exp: '2026-09-11', days_left: 154, escrow: 'NO', status: 'ok' },
   { address: '3309 NE 20th', entity: 'A2BH', borrower: 'Perla Terrazas', ins_exp: '2026-09-20', days_left: 163, escrow: 'YES', status: 'ok' },
   { address: '4312 Bonham', entity: 'A2BA', borrower: 'Leyva/Sarmiento', ins_exp: '2026-10-09', days_left: 182, escrow: 'YES', status: 'ok' },
@@ -736,11 +736,11 @@ export default function DashboardPage() {
             {/* Summary stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: 22 }}>
               {[
-                { label: 'Expired', val: INSURANCE_DATA.filter(d => d.status === 'expired').length, color: '#b91c1c', bg: '#fff5f5' },
-                { label: 'Critical (< 30d)', val: INSURANCE_DATA.filter(d => d.status === 'critical').length, color: '#b45309', bg: '#fffbeb' },
-                { label: 'Warning (< 90d)', val: INSURANCE_DATA.filter(d => d.status === 'warning').length, color: '#1d4ed8', bg: '#eff6ff' },
-                { label: 'Current', val: INSURANCE_DATA.filter(d => d.status === 'ok').length, color: '#15803d', bg: '#f0fdf4' },
-                { label: 'Total Tracked', val: INSURANCE_DATA.length, color: '#1c2026', bg: '#f7f9fc' },
+                { label: 'Expired', val: INSURANCE_DATA.filter(d => d.status === 'expired' && !d.paid_off).length, color: '#b91c1c', bg: '#fff5f5' },
+                { label: 'Critical (< 30d)', val: INSURANCE_DATA.filter(d => d.status === 'critical' && !d.paid_off).length, color: '#b45309', bg: '#fffbeb' },
+                { label: 'Warning (< 90d)', val: INSURANCE_DATA.filter(d => d.status === 'warning' && !d.paid_off).length, color: '#1d4ed8', bg: '#eff6ff' },
+                { label: 'Current', val: INSURANCE_DATA.filter(d => d.status === 'ok' && !d.paid_off).length, color: '#15803d', bg: '#f0fdf4' },
+                { label: 'Active', val: INSURANCE_DATA.filter(d => !d.paid_off).length, color: '#1c2026', bg: '#f7f9fc' },
               ].map((stat, i) => (
                 <div key={i} style={{ background: stat.bg, border: '1px solid #dce4ed', borderRadius: 8, padding: '14px 18px', textAlign: 'center' }}>
                   <div style={{ fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: '#4a5568', fontWeight: 600, marginBottom: 6 }}>{stat.label}</div>
@@ -764,7 +764,7 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {INSURANCE_DATA.map((item, i) => {
+                    {INSURANCE_DATA.filter(item => !item.paid_off).map((item, i) => {
                       const statusStyles: Record<string, { bg: string; color: string; label: string }> = {
                         expired:  { bg: '#fff5f5', color: '#b91c1c', label: 'EXPIRED' },
                         critical: { bg: '#fffbeb', color: '#b45309', label: 'CRITICAL' },
