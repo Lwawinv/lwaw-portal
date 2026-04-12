@@ -207,6 +207,7 @@ export default function DashboardPage() {
 
   // Data
   const [borrowers, setBorrowers] = useState<Borrower[]>([])
+  const [inactiveBorrowers, setInactiveBorrowers] = useState<Borrower[]>([])
   const [paymentLog, setPaymentLog] = useState<PaymentLog[]>([])
   const [allPayments, setAllPayments] = useState<Payment[]>([])
   const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([])
@@ -270,6 +271,9 @@ export default function DashboardPage() {
     if (bs) setBorrowers(bs)
     if (logs) setPaymentLog(logs)
     if (pmts) setAllPayments(pmts)
+    // Load inactive/paid-off borrowers separately
+    const { data: ibs } = await supabase.from('borrowers').select('*').eq('active', false).order('address')
+    if (ibs) setInactiveBorrowers(ibs)
     if (lds) setLoanDetails(lds)
     if (amort) setAmortCollections(amort)
   }
@@ -626,6 +630,37 @@ export default function DashboardPage() {
               </table>
             </div>
           </div>
+
+            {/* ── PAID OFF PROPERTIES ── */}
+            {inactiveBorrowers.length > 0 && (
+              <div style={{ marginTop: 24, background: '#fff', border: '1px solid #dce4ed', borderRadius: 10, overflow: 'hidden', opacity: 0.6 }}>
+                <div style={{ padding: '12px 18px', borderBottom: '1px solid #dce4ed', background: '#f0f4f8', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: '#4a5568' }}>Paid Off / Closed</span>
+                  <span style={{ fontSize: 11, background: '#e2e8f0', color: '#4a5568', borderRadius: 10, padding: '2px 8px' }}>{inactiveBorrowers.length} properties</span>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <tbody>
+                      {inactiveBorrowers.filter(b => !search || b.address.toLowerCase().includes(search.toLowerCase()) || b.borrower_name.toLowerCase().includes(search.toLowerCase())).map(b => (
+                        <tr key={b.id} style={{ borderBottom: '1px solid #f0f4f8' }}>
+                          <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 700, color: '#8b949e', minWidth: 80 }}>PAID OFF</td>
+                          <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: '#8b949e', textDecoration: 'line-through' }}>{b.address.split(',')[0]}</td>
+                          <td style={{ padding: '8px 12px', fontSize: 12, color: '#8b949e' }}>{b.borrower_name.split(' ').slice(0,2).join(' ')}</td>
+                          <td style={{ padding: '8px 12px', fontSize: 11, color: '#8b949e' }}>{b.entity.replace(', LLC','').replace('A Squared Property Investments','A²').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA')}</td>
+                          <td style={{ padding: '8px 12px', fontSize: 12, color: '#8b949e' }}>{b.payment_amount}</td>
+                          <td style={{ padding: '8px 12px' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#f0f4f8', color: '#8b949e' }}>✓ Paid Off</span>
+                          </td>
+                          <td style={{ padding: '8px 12px' }}>
+                            <button onClick={() => drillInto(b)} style={{ background: '#f0f4f8', border: 'none', padding: '5px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontWeight: 600, color: '#8b949e' }}>Details</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
         )}
 
         {/* ── DRILL DOWN TAB ── */}
