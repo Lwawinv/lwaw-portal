@@ -628,7 +628,7 @@ export default function DashboardPage() {
                   <table style={{width:'100%',borderCollapse:'collapse'}}>
                     <thead><tr style={{background:'#f0f4f8'}}>
                       {['Entity','MTD Total','MTD Principal','MTD Interest','YTD Total','YTD Principal','YTD Interest'].map(h => (
-                        <th key={h} style={{padding:'10px 14px',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,textAlign:'right',borderBottom:'1px solid #dce4ed',whiteSpace:'nowrap',':first-child':{textAlign:'left'} as any}}>{h}</th>
+                        <th key={h} style={{padding:'10px 14px',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,textAlign:h==='Entity'?'left':'right',borderBottom:'1px solid #dce4ed',whiteSpace:'nowrap'}}>{h}</th>
                       ))}
                     </tr></thead>
                     <tbody>
