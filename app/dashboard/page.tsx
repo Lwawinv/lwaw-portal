@@ -296,11 +296,21 @@ function NewDealChecklist() {
 export default function DashboardPage() {
   const [screen, setScreen] = useState<'login'|'dash'>('login')
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
+  const [adminPassword, setAdminPassword] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [err, setErr] = useState('')
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
+
+  // Credentials (Credentials tab)
+  type Cred = { borrower_id: string; username: string; password_plain: string; last_login: string | null; password_updated_at: string | null; borrower_name: string; address: string; active: boolean }
+  const [credentials, setCredentials] = useState<Cred[]>([])
+  const [credsLoading, setCredsLoading] = useState(false)
+  const [credsErr, setCredsErr] = useState('')
+  const [credsSearch, setCredsSearch] = useState('')
+  const [credsCopied, setCredsCopied] = useState<string>('')
+  const [credsRegenerating, setCredsRegenerating] = useState<string>('')
 
   const [borrowers, setBorrowers] = useState<Borrower[]>([])
   const [paymentLog, setPaymentLog] = useState<PaymentLog[]>([])
@@ -367,10 +377,54 @@ export default function DashboardPage() {
       const res = await fetch('/api/admin-login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) })
       const data = await res.json()
       if (!res.ok) { setErr(data.error || 'Invalid credentials'); return }
-      setAdminUser(data.admin); setScreen('dash')
+      setAdminUser(data.admin); setAdminPassword(password); setScreen('dash')
     } catch { setErr('Connection error.') }
     finally { setLoading(false) }
   }
+
+  async function loadCredentials() {
+    if (!adminUser || !adminPassword) return
+    setCredsLoading(true); setCredsErr('')
+    try {
+      const res = await fetch('/api/admin-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list', admin_username: adminUser.username, admin_password: adminPassword })
+      })
+      const data = await res.json()
+      if (!res.ok) { setCredsErr(data.error || 'Failed to load'); return }
+      setCredentials(data.credentials || [])
+    } catch { setCredsErr('Connection error') }
+    finally { setCredsLoading(false) }
+  }
+
+  async function regenerateCredential(target: string) {
+    if (!adminUser || !adminPassword) return
+    if (!confirm(`Regenerate password for ${target}? The current password will stop working.`)) return
+    setCredsRegenerating(target); setCredsErr('')
+    try {
+      const res = await fetch('/api/admin-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'regenerate', admin_username: adminUser.username, admin_password: adminPassword, target_username: target })
+      })
+      const data = await res.json()
+      if (!res.ok) { setCredsErr(data.error || 'Regeneration failed'); return }
+      // Update the row in state
+      setCredentials(prev => prev.map(c => c.username === target ? { ...c, password_plain: data.password_plain, password_updated_at: new Date().toISOString() } : c))
+    } catch { setCredsErr('Connection error') }
+    finally { setCredsRegenerating('') }
+  }
+
+  function copyCredential(text: string, key: string) {
+    navigator.clipboard.writeText(text).then(() => {
+      setCredsCopied(key)
+      setTimeout(() => setCredsCopied(''), 1500)
+    })
+  }
+
+  // Auto-load credentials when tab opens
+  useEffect(() => { if (activeTab === 'credentials' && adminUser && credentials.length === 0) loadCredentials() }, [activeTab])
 
   async function drillInto(b: Borrower) {
     setSelectedBorrower(b); setActiveTab('drill')
@@ -552,6 +606,7 @@ export default function DashboardPage() {
     ['payments','Payments'],
     adminUser?.role === 'superadmin' ? ['insurance',`Insurance`] : null,
     adminUser?.role === 'superadmin' ? ['escrow','Escrow'] : null,
+    adminUser?.role === 'superadmin' ? ['credentials','Credentials'] : null,
     adminUser?.role === 'superadmin' ? ['tools','Tools'] : null,
     adminUser?.role === 'superadmin' ? ['documents','Documents'] : null,
     adminUser?.role === 'superadmin' ? ['todo',`To-Do (${totalDone}/${totalItems})`] : null,
@@ -576,7 +631,7 @@ export default function DashboardPage() {
         <div style={{display:'flex',gap:16,alignItems:'center'}}>
           <Link href="/portal" style={{fontSize:12,color:'#8b949e',textDecoration:'none'}}>Borrower Portal</Link>
           <Link href="/" style={{fontSize:12,color:'#8b949e',textDecoration:'none'}}>Public Site</Link>
-          <button onClick={() => { setAdminUser(null); setScreen('login') }} style={{background:'none',border:'1px solid #30363d',padding:'5px 12px',borderRadius:4,fontSize:12,cursor:'pointer',color:'#8b949e',fontFamily:"'DM Sans', sans-serif"}}>Log Out</button>
+          <button onClick={() => { setAdminUser(null); setAdminPassword(''); setCredentials([]); setScreen('login') }} style={{background:'none',border:'1px solid #30363d',padding:'5px 12px',borderRadius:4,fontSize:12,cursor:'pointer',color:'#8b949e',fontFamily:"'DM Sans', sans-serif"}}>Log Out</button>
         </div>
       </nav>
 
@@ -899,6 +954,71 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* ── CREDENTIALS TAB ── */}
+        {activeTab === 'credentials' && adminUser?.role === 'superadmin' && (
+          <div>
+            <div style={{display:'flex',gap:12,marginBottom:18,alignItems:'center',flexWrap:'wrap',justifyContent:'space-between'}}>
+              <div>
+                <h2 style={{fontFamily:"'Playfair Display', serif",fontSize:22,marginBottom:4}}>Borrower Portal Credentials</h2>
+                <p style={{fontSize:13,color:'#4a5568',fontWeight:300}}>Issue, view, regenerate, and copy login credentials. Share these with borrowers — they sign in at <strong>lwawinv.com/portal</strong>.</p>
+              </div>
+              <button onClick={loadCredentials} disabled={credsLoading} style={{background:'#2e6da4',color:'#fff',border:'none',padding:'9px 18px',borderRadius:5,fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:credsLoading?0.6:1}}>{credsLoading ? 'Loading…' : '↻ Refresh'}</button>
+            </div>
+
+            {credsErr && <div style={{background:'#fff5f5',color:'#b91c1c',border:'1px solid #fecaca',borderRadius:5,padding:'10px 14px',fontSize:13,marginBottom:14}}>{credsErr}</div>}
+
+            <div style={{display:'flex',gap:10,marginBottom:14,alignItems:'center',flexWrap:'wrap'}}>
+              <input value={credsSearch} onChange={e => setCredsSearch(e.target.value)} placeholder="Search address, borrower, or username…" style={{border:'1px solid #dce4ed',borderRadius:5,padding:'8px 14px',fontSize:13,outline:'none',fontFamily:"'DM Sans', sans-serif",width:320}} />
+              <span style={{fontSize:12,color:'#4a5568'}}>{credentials.length} accounts</span>
+            </div>
+
+            <div style={{background:'#fff',border:'1px solid #dce4ed',borderRadius:10,overflow:'hidden'}}>
+              <div style={{overflowX:'auto'}}>
+                <table style={{width:'100%',borderCollapse:'collapse'}}>
+                  <thead><tr style={{background:'#f0f4f8'}}>
+                    {['Property','Borrower','Username','Password','Last Login','Updated','Actions'].map(h => (
+                      <th key={h} style={{padding:'10px 14px',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,textAlign:'left',borderBottom:'1px solid #dce4ed',whiteSpace:'nowrap'}}>{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {credentials
+                      .filter(c => !credsSearch || c.address?.toLowerCase().includes(credsSearch.toLowerCase()) || c.borrower_name?.toLowerCase().includes(credsSearch.toLowerCase()) || c.username?.toLowerCase().includes(credsSearch.toLowerCase()))
+                      .map(c => {
+                        const both = `Username: ${c.username}\nPassword: ${c.password_plain}\nLogin: https://lwawinv.com/portal`
+                        const isRegen = credsRegenerating === c.username
+                        return (
+                          <tr key={c.username} style={{borderBottom:'1px solid #f0f4f8'}}>
+                            <td style={{padding:'10px 14px',fontWeight:600,fontSize:13}}>{c.address?.split(',')[0] || '—'}</td>
+                            <td style={{padding:'10px 14px',fontSize:12,color:'#4a5568'}}>{c.borrower_name?.split(' ').slice(0,3).join(' ') || '—'}</td>
+                            <td style={{padding:'10px 14px',fontFamily:'monospace',fontSize:13}}>{c.username}</td>
+                            <td style={{padding:'10px 14px',fontFamily:'monospace',fontSize:13,color:'#1c2026',background:'#fffbeb',fontWeight:600}}>{c.password_plain || '—'}</td>
+                            <td style={{padding:'10px 14px',fontSize:12,color:'#4a5568'}}>{c.last_login ? fmtDate(c.last_login) : <span style={{color:'#9ca3af',fontStyle:'italic'}}>Never</span>}</td>
+                            <td style={{padding:'10px 14px',fontSize:12,color:'#4a5568'}}>{c.password_updated_at ? fmtDate(c.password_updated_at) : '—'}</td>
+                            <td style={{padding:'10px 14px',whiteSpace:'nowrap'}}>
+                              <button onClick={() => copyCredential(c.password_plain, c.username + ':pw')} style={{background:credsCopied===c.username+':pw'?'#15803d':'#f0f4f8',color:credsCopied===c.username+':pw'?'#fff':'#1c2026',border:'1px solid #dce4ed',padding:'5px 10px',borderRadius:4,fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",marginRight:4}}>
+                                {credsCopied===c.username+':pw' ? '✓ Copied' : 'Copy PW'}
+                              </button>
+                              <button onClick={() => copyCredential(both, c.username + ':both')} style={{background:credsCopied===c.username+':both'?'#15803d':'#f0f4f8',color:credsCopied===c.username+':both'?'#fff':'#1c2026',border:'1px solid #dce4ed',padding:'5px 10px',borderRadius:4,fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",marginRight:4}}>
+                                {credsCopied===c.username+':both' ? '✓ Copied' : 'Copy Both'}
+                              </button>
+                              <button onClick={() => regenerateCredential(c.username)} disabled={isRegen} style={{background:'#b45309',color:'#fff',border:'none',padding:'5px 10px',borderRadius:4,fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:isRegen?0.5:1}}>
+                                {isRegen ? '...' : '↻ Regenerate'}
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    {credentials.length === 0 && !credsLoading && (
+                      <tr><td colSpan={7} style={{padding:'32px',textAlign:'center',color:'#4a5568',fontStyle:'italic'}}>No credentials loaded. Click Refresh.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <p style={{fontSize:12,color:'#4a5568',marginTop:14,fontStyle:'italic'}}>⚠ Anyone with these credentials can view the linked borrower&rsquo;s loan details. Share via secure channels only (text, signed email).</p>
           </div>
         )}
 

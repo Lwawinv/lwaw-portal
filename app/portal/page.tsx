@@ -268,7 +268,7 @@ const content = {
 }
 
 export default function PortalPage() {
-  const [screen, setScreen] = useState<'home'|'login'|'register'|'select'|'dash'|'admin'>('home')
+  const [screen, setScreen] = useState<'home'|'login'|'select'|'dash'|'admin'>('home')
   const [lang, setLang] = useState<'en'|'es'>('en')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState('payments')
@@ -286,10 +286,8 @@ export default function PortalPage() {
   const [principalPaid, setPrincipalPaid] = useState(0)
   const [pct, setPct] = useState(0)
 
-  const [lastName, setLastName] = useState('')
-  const [zip, setZip] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
 
   const [adminMonth, setAdminMonth] = useState(new Date().getMonth())
   const [adminYear, setAdminYear] = useState(new Date().getFullYear())
@@ -304,16 +302,20 @@ export default function PortalPage() {
 
   const t = content[lang]
 
-  async function handleBorrowerLogin(mode: 'login' | 'register') {
+  async function handleBorrowerLogin() {
     setErr(''); setOk(''); setLoading(true)
     try {
-      const res = await fetch('/api/portal-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ last_name: lastName.trim().toLowerCase(), zip: zip.trim(), password, mode }) })
+      const res = await fetch('/api/portal-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim().toLowerCase(), password })
+      })
       const data = await res.json()
       if (!res.ok) { setErr(data.error || 'Authentication failed'); return }
-      if (mode === 'register') { setOk('Account created! You can now sign in.'); setScreen('login'); return }
-      setBorrowers(data.borrowers || [])
-      if (data.borrowers?.length === 1) { setSelectedBorrower(data.borrowers[0]); loadBorrowerData(data.borrowers[0]); setScreen('dash') }
-      else if (data.borrowers?.length > 1) setScreen('select')
+      const list: Borrower[] = data.borrowers || []
+      setBorrowers(list)
+      if (list.length === 1) { setSelectedBorrower(list[0]); loadBorrowerData(list[0]); setScreen('dash') }
+      else if (list.length > 1) setScreen('select')
       else setErr('No active loans found for your account.')
     } catch { setErr('Connection error. Please try again.') }
     finally { setLoading(false) }
@@ -496,31 +498,21 @@ export default function PortalPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 64px)', padding: '32px 18px' }}>
           <div style={{ ...s.card, width: '100%', maxWidth: 440, boxShadow: '0 4px 24px rgba(0,0,0,.07)' }}>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, marginBottom: 6 }}>Portal Login</h2>
-            <p style={{ fontSize: 14, color: '#4a5568', marginBottom: 24, fontWeight: 300 }}>Sign in to access your loan information and payment history.</p>
-            {err && <div style={s.errMsg}>{err}</div>}
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Last Name</label><input style={s.input} value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name on your loan" autoComplete="off"/></div>
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Property ZIP Code</label><input style={s.input} value={zip} onChange={e => setZip(e.target.value)} placeholder="5-digit ZIP" maxLength={5} autoComplete="off"/></div>
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Password</label><input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password" onKeyDown={e => e.key === 'Enter' && handleBorrowerLogin('login')}/></div>
-            <button onClick={() => handleBorrowerLogin('login')} disabled={loading} style={{ ...s.btnBlue, marginTop: 4, opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
-            <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#4a5568' }}>First time? <a onClick={() => setScreen('register')} style={{ color: '#2e6da4', cursor: 'pointer', textDecoration: 'underline' }}>Create your account →</a></div>
-          </div>
-        </div>
-      )}
-
-      {/* ═══ REGISTER ═══ */}
-      {screen === 'register' && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 64px)', padding: '32px 18px' }}>
-          <div style={{ ...s.card, width: '100%', maxWidth: 440, boxShadow: '0 4px 24px rgba(0,0,0,.07)' }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, marginBottom: 6 }}>Create Your Account</h2>
-            <p style={{ fontSize: 14, color: '#4a5568', marginBottom: 24, fontWeight: 300 }}>We verify your identity using your last name and property ZIP code.</p>
+            <p style={{ fontSize: 14, color: '#4a5568', marginBottom: 24, fontWeight: 300 }}>Sign in with the username and password provided to you by LWAW Investments.</p>
             {err && <div style={s.errMsg}>{err}</div>}
             {ok && <div style={s.okMsg}>{ok}</div>}
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Last Name</label><input style={s.input} value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name exactly as on your loan"/><p style={{ fontSize: 12, color: '#4a5568', marginTop: 6, fontStyle: 'italic' }}>Must match your loan documents exactly.</p></div>
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Property ZIP Code</label><input style={s.input} value={zip} onChange={e => setZip(e.target.value)} placeholder="ZIP code of your property" maxLength={5}/></div>
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Choose a Password</label><input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 6 characters"/></div>
-            <div style={{ marginBottom: 16 }}><label style={s.label}>Confirm Password</label><input style={s.input} type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter password"/></div>
-            <button onClick={() => { if(password!==confirm){setErr('Passwords do not match');return} handleBorrowerLogin('register') }} disabled={loading} style={{ ...s.btnBlue, opacity: loading ? .7 : 1 }}>{loading ? 'Creating account...' : 'Create Account'}</button>
-            <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#4a5568' }}>Already have an account? <a onClick={() => setScreen('login')} style={{ color: '#2e6da4', cursor: 'pointer', textDecoration: 'underline' }}>Sign in →</a></div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={s.label}>Username</label>
+              <input style={s.input} value={username} onChange={e => setUsername(e.target.value)} placeholder="e.g. firstname-1234" autoComplete="off" autoCapitalize="off" autoCorrect="off" spellCheck={false}/>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={s.label}>Password</label>
+              <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password" onKeyDown={e => e.key === 'Enter' && handleBorrowerLogin()} autoCapitalize="off" autoCorrect="off" spellCheck={false}/>
+            </div>
+            <button onClick={() => handleBorrowerLogin()} disabled={loading} style={{ ...s.btnBlue, marginTop: 4, opacity: loading ? .7 : 1 }}>{loading ? 'Signing in...' : 'Sign In'}</button>
+            <div style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#4a5568' }}>
+              Don&rsquo;t have credentials? Contact LWAW at <a href="mailto:lwawinv@gmail.com" style={{ color: '#2e6da4' }}>lwawinv@gmail.com</a> or <a href="tel:8066803556" style={{ color: '#2e6da4' }}>806-680-3556</a>.
+            </div>
           </div>
         </div>
       )}
