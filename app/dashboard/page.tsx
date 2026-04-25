@@ -27,18 +27,13 @@ type LoanDetail = {
 }
 type EscrowAccount = { borrower_id: string; address: string; entity: string; bank: string; balance: number; as_of_date: string }
 type TodoItem = { id: string; category_id: string; category_label: string; category_accent: string; item_id: number; text: string; done: boolean }
-type Document = { id: string; name: string; category: string; borrower_id: string | null; notes: string | null; created_at: string; file_url: string | null }
+type DocRecord = { id: string; name: string; category: string; borrower_id: string | null; notes: string | null; created_at: string; file_url: string | null }
 
 const fmt = (n: number | null | undefined) => n != null ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'
 const fmtDate = (d: string) => { if (!d) return '—'; const p = d.split('T')[0].split('-'); return p[1] + '/' + p[2] + '/' + p[0] }
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const ENTITIES = ['All Entities','A2DSTX, LLC','A2PI, LLC','A2AF2, LLC','A2BH, LLC','A2BA Finance, LLC','A Squared Property Investments, LLC','Equity Trust Company Custodian FBO Arick Wray IRA']
 
-function hashPw(pw: string): string {
-  let h = 5381
-  for (let i = 0; i < pw.length; i++) { h = ((h << 5) + h) + pw.charCodeAt(i); h = h >>> 0 }
-  return h.toString(36)
-}
 
 // ── AMORTIZATION TABLE ────────────────────────────────────────────────────────
 function DashAmortizationTable({ borrowerId }: { borrowerId: string }) {
@@ -259,7 +254,7 @@ function NewDealChecklist() {
   const [checked, setChecked] = useState<number[]>([])
   const [dealName, setDealName] = useState('')
   const toggle = (id: number) => setChecked(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
-  const phases = [...new Set(CHECKLIST.map(i => i.phase))]
+  const phases = Array.from(new Set(CHECKLIST.map(i => i.phase)))
   const pct = Math.round(checked.length/CHECKLIST.length*100)
   return (
     <div>
@@ -308,15 +303,12 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview')
 
   const [borrowers, setBorrowers] = useState<Borrower[]>([])
-  const [inactiveBorrowers, setInactiveBorrowers] = useState<Borrower[]>([])
   const [paymentLog, setPaymentLog] = useState<PaymentLog[]>([])
   const [allPayments, setAllPayments] = useState<Payment[]>([])
-  const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([])
   const [escrowAccounts, setEscrowAccounts] = useState<EscrowAccount[]>([])
   const [todos, setTodos] = useState<TodoItem[]>([])
-  const [documents, setDocuments] = useState<Document[]>([])
+  const [documents, setDocuments] = useState<DocRecord[]>([])
   const [selectedBorrower, setSelectedBorrower] = useState<Borrower | null>(null)
-  const [drillPayments, setDrillPayments] = useState<Payment[]>([])
   const [drillLoan, setDrillLoan] = useState<LoanDetail | null>(null)
 
   const [month, setMonth] = useState(new Date().getMonth())
@@ -353,11 +345,10 @@ export default function DashboardPage() {
 
   async function loadData() {
     const { supabase } = await import('@/lib/supabase')
-    const [{ data: bs }, { data: logs }, { data: pmts }, { data: lds }, { data: esc }, { data: td }, { data: docs }] = await Promise.all([
+    const [{ data: bs }, { data: logs }, { data: pmts }, { data: esc }, { data: td }, { data: docs }] = await Promise.all([
       supabase.from('borrowers').select('*').eq('active', true).order('address'),
       supabase.from('payment_log').select('*').order('created_at', { ascending: false }),
       supabase.from('payment_history').select('*').order('payment_date', { ascending: false }),
-      supabase.from('loan_details').select('*'),
       supabase.from('escrow_accounts').select('*').order('entity'),
       supabase.from('todo_items').select('*').order('category_id').order('item_id'),
       supabase.from('documents').select('*').order('created_at', { ascending: false }),
@@ -365,12 +356,9 @@ export default function DashboardPage() {
     if (bs) setBorrowers(bs)
     if (logs) setPaymentLog(logs)
     if (pmts) setAllPayments(pmts)
-    if (lds) setLoanDetails(lds)
     if (esc) setEscrowAccounts(esc)
     if (td) setTodos(td)
     if (docs) setDocuments(docs)
-    const { data: ibs } = await supabase.from('borrowers').select('*').eq('active', false).order('address')
-    if (ibs) setInactiveBorrowers(ibs)
   }
 
   async function handleLogin() {
@@ -387,11 +375,7 @@ export default function DashboardPage() {
   async function drillInto(b: Borrower) {
     setSelectedBorrower(b); setActiveTab('drill')
     const { supabase } = await import('@/lib/supabase')
-    const [{ data: pmts }, { data: ld }] = await Promise.all([
-      supabase.from('payment_history').select('*').eq('borrower_id', b.id).order('payment_date', { ascending: false }),
-      supabase.from('loan_details').select('*').eq('borrower_id', b.id).single()
-    ])
-    if (pmts) setDrillPayments(pmts)
+    const { data: ld } = await supabase.from('loan_details').select('*').eq('borrower_id', b.id).single()
     if (ld) setDrillLoan(ld)
   }
 
@@ -521,7 +505,7 @@ export default function DashboardPage() {
       return 0
     })
 
-  const todoCategories = [...new Set(todos.map(t => t.category_id))].map(cid => ({
+  const todoCategories = Array.from(new Set(todos.map(t => t.category_id))).map(cid => ({
     id: cid, label: todos.find(t => t.category_id === cid)?.category_label || cid,
     accent: todos.find(t => t.category_id === cid)?.category_accent || '#2e6da4',
     items: todos.filter(t => t.category_id === cid)
@@ -557,7 +541,7 @@ export default function DashboardPage() {
         {err && <div style={{background:'#3d1515',color:'#f87171',border:'1px solid #7f1d1d',borderRadius:5,padding:'10px 14px',fontSize:13,marginBottom:16}}>{err}</div>}
         <div style={{marginBottom:14}}><label style={{...s.label,color:'#8b949e'}}>Username</label><input style={{...s.input,background:'#0d1117',border:'1px solid #30363d',color:'#f0f6fc'}} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" autoComplete="off"/></div>
         <div style={{marginBottom:20}}><label style={{...s.label,color:'#8b949e'}}>Password</label><input style={{...s.input,background:'#0d1117',border:'1px solid #30363d',color:'#f0f6fc'}} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" onKeyDown={e => e.key === 'Enter' && handleLogin()}/></div>
-        <button onClick={handleLogin} disabled={loading} style={{width:'100%',background:'#2e6da4',color:'#fff',border:'none',padding:'12px',borderRadius:6,fontSize:15,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:loading?.7:1}}>{loading ? 'Signing in...' : 'Sign In'}</button>
+        <button onClick={handleLogin} disabled={loading} style={{width:'100%',background:'#2e6da4',color:'#fff',border:'none',padding:'12px',borderRadius:6,fontSize:15,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:loading ? 0.7 : 1}}>{loading ? 'Signing in...' : 'Sign In'}</button>
         <div style={{marginTop:20,textAlign:'center'}}><Link href="/" style={{fontSize:12,color:'#8b949e',textDecoration:'none'}}>← Back to lwawinv.com</Link></div>
       </div>
     </div>
@@ -959,7 +943,7 @@ export default function DashboardPage() {
                 <input type="file" onChange={e => setDocFile(e.target.files?.[0] || null)} style={{fontSize:13,fontFamily:"'DM Sans', sans-serif"}} />
               </div>
               {docMsg && <div style={{background:docMsg.startsWith('✓')?'#f0fdf4':'#fff5f5',color:docMsg.startsWith('✓')?'#15803d':'#b91c1c',border:`1px solid ${docMsg.startsWith('✓')?'#bbf7d0':'#fecaca'}`,borderRadius:5,padding:'8px 12px',fontSize:13,marginBottom:12}}>{docMsg}</div>}
-              <button onClick={uploadDocument} disabled={docUploading} style={{background:'#2e6da4',color:'#fff',border:'none',padding:'11px 24px',borderRadius:6,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:docUploading?.7:1}}>{docUploading?'Saving...':'Save Document'}</button>
+              <button onClick={uploadDocument} disabled={docUploading} style={{background:'#2e6da4',color:'#fff',border:'none',padding:'11px 24px',borderRadius:6,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:docUploading ? 0.7 : 1}}>{docUploading?'Saving...':'Save Document'}</button>
             </div>
             <div style={{...s.card,overflow:'hidden',padding:0}}>
               <div style={{padding:'14px 20px',borderBottom:'1px solid #dce4ed',background:'#f7f9fc',fontWeight:700,fontSize:15}}>Document Archive ({documents.length})</div>
@@ -1034,7 +1018,7 @@ export default function DashboardPage() {
             <div style={{marginBottom:16}}><label style={s.label}>Notes</label><textarea style={{...s.input,resize:'vertical',minHeight:60}} value={modalNotes} onChange={e => setModalNotes(e.target.value)} placeholder="Optional..."/></div>
             <div style={{display:'flex',gap:10}}>
               <button onClick={() => setModalOpen(false)} style={{background:'none',border:'1px solid #dce4ed',color:'#4a5568',padding:'10px 18px',borderRadius:5,fontSize:13,cursor:'pointer',fontFamily:"'DM Sans', sans-serif"}}>Cancel</button>
-              <button onClick={submitPayment} disabled={modalLoading} style={{flex:1,background:'#15803d',color:'#fff',border:'none',padding:'10px',borderRadius:5,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:modalLoading?.7:1}}>{modalLoading ? 'Posting...' : '✓ Post & Notify Brad'}</button>
+              <button onClick={submitPayment} disabled={modalLoading} style={{flex:1,background:'#15803d',color:'#fff',border:'none',padding:'10px',borderRadius:5,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",opacity:modalLoading ? 0.7 : 1}}>{modalLoading ? 'Posting...' : '✓ Post & Notify Brad'}</button>
             </div>
           </div>
         </div>
