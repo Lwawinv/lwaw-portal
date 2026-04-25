@@ -103,6 +103,82 @@ const TOOL_ENTITIES: Record<string, { address: string; signer: string; bank: str
   'A Squared Property Investments, LLC': { address: '1612 S Washington, Amarillo TX 79102', signer: 'Arick Wray, member', bank: 'Prosperity Bank', acct: '', bankAddr: '' },
   'Equity Trust Company Custodian FBO Arick Wray IRA': { address: '1612 S Washington, Amarillo TX 79102', signer: '', bank: 'Equity Trust (trustetc.com)', acct: '', bankAddr: '' },
 }
+// ── ATTORNEY FEE SCHEDULE (Morgan Williamson LLP – 2025) ──────────────────────
+// Two-column pricing: Loan Docs / CB Internal Docs. Single price means same in both columns.
+const ATTORNEY_FEES: { item: string; loanDocs: string; cbInternal?: string }[] = [
+  { item: 'Affidavit of Commencement', loanDocs: '$50.00' },
+  { item: 'Agreement to Provide Insurance', loanDocs: '$50.00' },
+  { item: 'Allonge', loanDocs: '$25.00' },
+  { item: 'Assignment of Rents', loanDocs: '$135.00', cbInternal: '$145.00' },
+  { item: 'Assumption Documents', loanDocs: '$350.00' },
+  { item: 'Bondholder Letter', loanDocs: '$350.00' },
+  { item: 'Certification and Authorization by Partners', loanDocs: 'Quote' },
+  { item: 'Collateral Transfer of Note and Lien', loanDocs: '$225.00' },
+  { item: 'Cross Collateralization and Cross Default', loanDocs: '$180.00' },
+  { item: 'Customer Identification Notice', loanDocs: '$125.00' },
+  { item: 'Deed in Lieu (with Title – we review)', loanDocs: '$350.00' },
+  { item: 'Deed in Lieu (without title)', loanDocs: '$180.00' },
+  { item: 'Deed of Trust', loanDocs: '$150.00' },
+  { item: 'Designation of Homestead', loanDocs: '$130.00' },
+  { item: 'Disclaimer of Oral Agreements', loanDocs: '$60.00' },
+  { item: 'Draw Request', loanDocs: '$120.00' },
+  { item: 'Endorsement of Note', loanDocs: '$40.00' },
+  { item: 'Errors and Omissions', loanDocs: '$90.00', cbInternal: '$95.00' },
+  { item: 'Forbearance Agreement', loanDocs: '$350.00' },
+  { item: 'Guaranty', loanDocs: '$175.00', cbInternal: '$185.00' },
+  { item: 'Loan Agreement', loanDocs: '$500.00', cbInternal: '$550.00' },
+  { item: 'M&M Lien Note, Contract and Transfer', loanDocs: '$550.00' },
+  { item: 'Modification', loanDocs: '$300.00', cbInternal: '$300.00' },
+  { item: 'Name Affidavit', loanDocs: '$125.00' },
+  { item: 'Note', loanDocs: '$150.00' },
+  { item: 'Notice of Final Agreement', loanDocs: '$70.00', cbInternal: '$75.00' },
+  { item: 'Owner Affidavit of Completion', loanDocs: '$60.00' },
+  { item: 'Pledge Agreement', loanDocs: '$180.00', cbInternal: '$195.00' },
+  { item: 'Recognition Agreement', loanDocs: '$180.00' },
+  { item: 'Release of Lien', loanDocs: '$150.00' },
+  { item: 'Resolution', loanDocs: '$150.00', cbInternal: '$160.00' },
+  { item: 'Security Agreement', loanDocs: '$180.00', cbInternal: '$195.00' },
+  { item: 'Subordination Agreement', loanDocs: '$180.00' },
+  { item: 'Transfer of Lien', loanDocs: '$150.00' },
+  { item: 'UCC', loanDocs: '$160.00' },
+  { item: 'Warranty Deed', loanDocs: '$125.00' },
+]
+function AttorneyFeeReference() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{marginTop:18,marginBottom:6,border:'1px solid #dce4ed',borderRadius:8,background:'#fafcff'}}>
+      <button onClick={() => setOpen(o => !o)} style={{width:'100%',background:'none',border:'none',padding:'12px 16px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',fontFamily:"'DM Sans', sans-serif",fontSize:13,fontWeight:600,color:'#2e6da4',letterSpacing:0.3}}>
+        <span>📋 Attorney Fee Reference — Morgan Williamson LLP (2025)</span>
+        <span style={{fontSize:18,transform:open?'rotate(45deg)':'none',transition:'transform .25s'}}>+</span>
+      </button>
+      {open && (
+        <div style={{padding:'4px 16px 16px 16px'}}>
+          <div style={{fontSize:11,color:'#4a5568',marginBottom:10,fontStyle:'italic'}}>Two-column pricing where applicable: Loan Docs / CB Internal Docs.</div>
+          <div style={{maxHeight:340,overflowY:'auto',border:'1px solid #e8eef5',borderRadius:6,background:'#fff'}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+              <thead style={{position:'sticky',top:0,background:'#f0f4f8'}}>
+                <tr>
+                  <th style={{padding:'8px 12px',textAlign:'left',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,borderBottom:'1px solid #dce4ed'}}>Document</th>
+                  <th style={{padding:'8px 12px',textAlign:'right',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,borderBottom:'1px solid #dce4ed',width:110}}>Loan Docs</th>
+                  <th style={{padding:'8px 12px',textAlign:'right',fontSize:11,textTransform:'uppercase',color:'#4a5568',fontWeight:600,borderBottom:'1px solid #dce4ed',width:110}}>CB Internal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ATTORNEY_FEES.map((f, i) => (
+                  <tr key={i} style={{borderBottom:'1px solid #f0f4f8',background:i%2===0?'#fff':'#fafcff'}}>
+                    <td style={{padding:'7px 12px',color:'#1c2026'}}>{f.item}</td>
+                    <td style={{padding:'7px 12px',textAlign:'right',fontWeight:600,color:'#1c2026'}}>{f.loanDocs}</td>
+                    <td style={{padding:'7px 12px',textAlign:'right',color:f.cbInternal?'#1c2026':'#a0aec0'}}>{f.cbInternal || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 const ts = {
   label: { fontSize:10,letterSpacing:2,textTransform:'uppercase' as const,color:'#4a5568',fontWeight:600,marginBottom:6,display:'block' as const },
   input: { width:'100%',padding:'9px 13px',border:'1px solid #dce4ed',borderRadius:5,fontSize:14,fontFamily:"'DM Sans', sans-serif",color:'#1c2026',outline:'none',boxSizing:'border-box' as const },
@@ -170,6 +246,7 @@ function DocOrderForm() {
       </div>
       <button onClick={generate} style={ts.btnBlue}>Generate Doc Order</button>
       {output && <div><div style={ts.output}>{output}</div><button onClick={() => navigator.clipboard.writeText(output)} style={{...ts.btnGreen,marginTop:10}}>Copy to Clipboard</button></div>}
+      <AttorneyFeeReference />
     </div>
   )
 }
@@ -219,6 +296,118 @@ function ClosingFeesCalc() {
       </div>
       <button onClick={generate} style={ts.btnBlue}>Calculate & Generate</button>
       {output && <div><div style={ts.output}>{output}</div><button onClick={() => navigator.clipboard.writeText(output)} style={{...ts.btnGreen,marginTop:10}}>Copy</button></div>}
+    </div>
+  )
+}
+// ── PAYMENT INSTRUCTIONS LOOKUP ───────────────────────────────────────────────
+// Pulls live bank/account info from Supabase borrowers table.
+// Filters: Entity (required) + Escrow status (optional).
+// Groups properties that share the same bank+account so duplicates collapse into one card.
+function PaymentInstructionsLookup({ borrowers }: { borrowers: Borrower[] }) {
+  const [entity, setEntity] = useState('')
+  const [escrowFilter, setEscrowFilter] = useState<'all' | 'escrow' | 'none'>('all')
+
+  const entityOptions = Array.from(new Set(borrowers.filter(b => b.active).map(b => b.entity).filter(Boolean))).sort()
+
+  const matched = borrowers.filter(b => {
+    if (!b.active) return false
+    if (entity && b.entity !== entity) return false
+    if (escrowFilter === 'escrow' && b.escrow === 'none') return false
+    if (escrowFilter === 'none' && b.escrow !== 'none') return false
+    return true
+  })
+
+  // Group by unique bank + account_number combination
+  const groups: Record<string, Borrower[]> = {}
+  matched.forEach(b => {
+    const key = `${b.entity}|${b.bank || '—'}|${b.account_number || '—'}|${b.bank_address || '—'}`
+    if (!groups[key]) groups[key] = []
+    groups[key].push(b)
+  })
+
+  const copyCard = (b: Borrower, props: Borrower[]) => {
+    const propList = props.map(p => `  • ${p.address}${p.escrow !== 'none' ? ' (Escrow)' : ''}`).join('\n')
+    const text = `PAYMENT INSTRUCTIONS — ${b.entity}\n\nLender: ${b.entity}\n${b.entity_address || ''}\n\nDeposit to:\n${b.bank || ''}\n${b.bank_address || ''}\nAccount # ${b.account_number || ''}\n\nApplies to:\n${propList}\n\nAfter deposit, text a photo of the deposit slip to 806-680-3556.`
+    navigator.clipboard.writeText(text)
+  }
+
+  return (
+    <div>
+      <div style={ts.section}>Lookup</div>
+      <div style={ts.grid2}>
+        <TField label="Entity">
+          <select style={ts.input} value={entity} onChange={e => setEntity(e.target.value)}>
+            <option value="">— Select entity —</option>
+            {entityOptions.map(e => <option key={e}>{e}</option>)}
+          </select>
+        </TField>
+        <TField label="Escrow Status">
+          <select style={ts.input} value={escrowFilter} onChange={e => setEscrowFilter(e.target.value as any)}>
+            <option value="all">All (escrow + non-escrow)</option>
+            <option value="escrow">Escrow only</option>
+            <option value="none">Non-escrow only</option>
+          </select>
+        </TField>
+      </div>
+
+      {!entity && (
+        <div style={{padding:'24px 16px',background:'#f7f9fc',borderRadius:8,color:'#4a5568',fontSize:13,textAlign:'center',fontStyle:'italic'}}>
+          Select an entity above to view payment details.
+        </div>
+      )}
+
+      {entity && Object.keys(groups).length === 0 && (
+        <div style={{padding:'24px 16px',background:'#fff5f5',border:'1px solid #fecaca',borderRadius:8,color:'#b91c1c',fontSize:13,textAlign:'center'}}>
+          No active loans match this entity + escrow filter.
+        </div>
+      )}
+
+      {entity && Object.entries(groups).map(([key, props], idx) => {
+        const b = props[0]
+        return (
+          <div key={key} style={{background:'#fff',border:'1px solid #dce4ed',borderRadius:10,padding:'18px 22px',marginBottom:14}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:14,flexWrap:'wrap',gap:10}}>
+              <div>
+                <div style={{fontSize:11,letterSpacing:1.5,textTransform:'uppercase',color:'#2e6da4',fontWeight:600,marginBottom:4}}>Lender (1st)</div>
+                <div style={{fontSize:15,fontWeight:600,color:'#1c2026'}}>{b.entity}</div>
+                <div style={{fontSize:13,color:'#4a5568'}}>{b.entity_address}</div>
+              </div>
+              <button onClick={() => copyCard(b, props)} style={{background:'#15803d',color:'#fff',border:'none',padding:'8px 16px',borderRadius:6,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans', sans-serif",whiteSpace:'nowrap'}}>Copy Block</button>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:18,marginBottom:14,padding:'14px 0',borderTop:'1px solid #f0f4f8',borderBottom:'1px solid #f0f4f8'}}>
+              <div>
+                <div style={{fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:'#4a5568',fontWeight:600,marginBottom:4}}>Bank</div>
+                <div style={{fontSize:14,color:'#1c2026',fontWeight:500}}>{b.bank || '—'}</div>
+              </div>
+              <div>
+                <div style={{fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:'#4a5568',fontWeight:600,marginBottom:4}}>Bank Address</div>
+                <div style={{fontSize:13,color:'#1c2026'}}>{b.bank_address || '—'}</div>
+              </div>
+              <div>
+                <div style={{fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:'#4a5568',fontWeight:600,marginBottom:4}}>Account #</div>
+                <div style={{fontSize:14,color:'#1c2026',fontWeight:600,fontFamily:'monospace'}}>{b.account_number || '—'}</div>
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:'#4a5568',fontWeight:600,marginBottom:6}}>Applies to {props.length} {props.length === 1 ? 'loan' : 'loans'}</div>
+              <ul style={{margin:0,padding:'0 0 0 18px',fontSize:13,color:'#1c2026',lineHeight:1.7}}>
+                {props.map(p => (
+                  <li key={p.id}>
+                    {p.address}
+                    {p.escrow !== 'none' && <span style={{marginLeft:8,fontSize:11,background:'#e8f5e9',color:'#15803d',padding:'1px 8px',borderRadius:10,fontWeight:600}}>ESCROW</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )
+      })}
+
+      {entity && Object.keys(groups).length > 1 && (
+        <div style={{padding:'10px 14px',background:'#fffbeb',border:'1px solid #fde68a',borderRadius:6,fontSize:12,color:'#78350f',marginTop:6}}>
+          ⚠ Multiple bank accounts found for this entity. Match the property address before sharing payment instructions.
+        </div>
+      )}
     </div>
   )
 }
@@ -1026,13 +1215,14 @@ export default function DashboardPage() {
         {activeTab === 'tools' && adminUser?.role === 'superadmin' && (
           <div>
             <div style={{display:'flex',gap:2,marginBottom:20,borderBottom:'2px solid #dce4ed'}}>
-              {[{id:'docorder',label:'Doc Order Form'},{id:'closingfees',label:'Closing Fees Calculator'},{id:'checklist',label:'New Deal Checklist'}].map(t => (
+              {[{id:'docorder',label:'Doc Order Form'},{id:'closingfees',label:'Closing Fees Calculator'},{id:'paymentinstructions',label:'Payment Instructions'},{id:'checklist',label:'New Deal Checklist'}].map(t => (
                 <button key={t.id} onClick={() => setToolTab(t.id)} style={{padding:'10px 20px',fontSize:13,fontWeight:600,color:toolTab===t.id?'#2e6da4':'#4a5568',cursor:'pointer',background:'none',border:'none',borderBottom:toolTab===t.id?'2px solid #2e6da4':'2px solid transparent',marginBottom:-2,fontFamily:"'DM Sans', sans-serif",whiteSpace:'nowrap'}}>{t.label}</button>
               ))}
             </div>
             <div style={{background:'#fff',border:'1px solid #dce4ed',borderRadius:10,padding:'22px 26px'}}>
               {toolTab === 'docorder' && <DocOrderForm />}
               {toolTab === 'closingfees' && <ClosingFeesCalc />}
+              {toolTab === 'paymentinstructions' && <PaymentInstructionsLookup borrowers={borrowers} />}
               {toolTab === 'checklist' && <NewDealChecklist />}
             </div>
           </div>
