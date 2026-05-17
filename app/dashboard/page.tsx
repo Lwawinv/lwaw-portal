@@ -695,12 +695,14 @@ export default function DashboardPage() {
   const totalEscrow = escrowAccounts.reduce((s, e) => s + e.balance, 0)
 
   function getPaymentStatus(b: Borrower) {
-    const firstPay = b.first_payment_date ? new Date(b.first_payment_date) : null
-    const viewDate = new Date(year, month, 1)
-    if (firstPay && viewDate < firstPay) return { status: 'future', amount: null }
-    const logged = paymentLog.find(p => { const d = new Date(p.payment_date); return p.borrower_id === b.id && d.getFullYear() === year && d.getMonth() === month })
+    // Use string-based date matching to avoid JS Date timezone bug where
+    // new Date('2026-05-01') parses as UTC midnight and shifts to prior day in negative-offset zones (e.g. CDT)
+    const ymPrefix = year.toString() + '-' + (month + 1).toString().padStart(2, '0')
+    const viewDateStr = ymPrefix + '-01'
+    if (b.first_payment_date && viewDateStr < b.first_payment_date.substring(0, 10)) return { status: 'future', amount: null }
+    const logged = paymentLog.find(p => p.borrower_id === b.id && p.payment_date.startsWith(ymPrefix))
     if (logged) return { status: 'paid', amount: logged.amount }
-    const fromAmort = allPayments.find(p => { const d = new Date(p.payment_date); return p.borrower_id === b.id && d.getFullYear() === year && d.getMonth() === month })
+    const fromAmort = allPayments.find(p => p.borrower_id === b.id && p.payment_date.startsWith(ymPrefix))
     if (fromAmort) return { status: 'paid', amount: fromAmort.total_paid }
     const dueNum = parseInt(b.due_day)
     const isPast = now.getFullYear() > year || (now.getFullYear() === year && now.getMonth() > month) ||
