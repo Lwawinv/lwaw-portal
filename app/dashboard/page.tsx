@@ -670,10 +670,12 @@ export default function DashboardPage() {
   const yearEnd = `${year}-12-31`
   const mtdLogs = paymentLog.filter(p => p.payment_date >= monthStart && p.payment_date <= monthEnd)
   const ytdLogs = paymentLog.filter(p => p.payment_date >= yearStart && p.payment_date <= yearEnd)
-  const mtdTotal = mtdLogs.reduce((s, p) => s + p.amount, 0)
-  const ytdTotal = ytdLogs.reduce((s, p) => s + p.amount, 0)
+  // MTD/YTD Collected now reads from payment_history (584 rows) not payment_log (7 rows)
+  // Per audit 2026-05-16 — payment_log only captures manual portal posts, missing the real activity.
   const mtdPayments = allPayments.filter(p => p.payment_date >= monthStart && p.payment_date <= monthEnd)
   const ytdPayments = allPayments.filter(p => p.payment_date >= yearStart && p.payment_date <= yearEnd)
+  const mtdTotal = mtdPayments.reduce((s, p) => s + (p.total_paid || 0), 0)
+  const ytdTotal = ytdPayments.reduce((s, p) => s + (p.total_paid || 0), 0)
   const mtdPrincipal = mtdPayments.reduce((s, p) => s + (p.principal || 0), 0)
   const mtdInterest = mtdPayments.reduce((s, p) => s + (p.interest || 0), 0)
   const ytdPrincipal = ytdPayments.reduce((s, p) => s + (p.principal || 0), 0)
@@ -681,14 +683,18 @@ export default function DashboardPage() {
 
   const entityTotals = ENTITIES.slice(1).map(entity => {
     const ids = borrowers.filter(b => b.entity === entity).map(b => b.id)
-    const mtd = mtdLogs.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + p.amount, 0)
-    const ytd = ytdLogs.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + p.amount, 0)
+    // Use payment_history (mtdPayments/ytdPayments) for mtd/ytd, not paymentLog,
+    // so entities without manual portal posts (A2PI, A2AF2, IRA) still show in the rollup.
+    const mtd = mtdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.total_paid || 0), 0)
+    const ytd = ytdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.total_paid || 0), 0)
     const mtdP = mtdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.principal || 0), 0)
     const mtdI = mtdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.interest || 0), 0)
     const ytdP = ytdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.principal || 0), 0)
     const ytdI = ytdPayments.filter(p => ids.includes(p.borrower_id)).reduce((s, p) => s + (p.interest || 0), 0)
-    return { entity: entity.replace(', LLC','').replace('A Squared Property Investments','A Squared').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA (Arick)'), mtd, ytd, mtdP, mtdI, ytdP, ytdI }
-  }).filter(e => e.mtd > 0 || e.ytd > 0)
+    const hasActiveLoans = ids.length > 0
+    return { entity: entity.replace(', LLC','').replace('A Squared Property Investments','A Squared').replace('Equity Trust Company Custodian FBO Arick Wray IRA','IRA (Arick)'), mtd, ytd, mtdP, mtdI, ytdP, ytdI, hasActiveLoans }
+  // Show every entity with at least one active loan — period activity may be zero.
+  }).filter(e => e.hasActiveLoans)
 
   const escrowByEntity: Record<string, number> = {}
   escrowAccounts.forEach(e => { escrowByEntity[e.entity] = (escrowByEntity[e.entity] || 0) + e.balance })
@@ -707,6 +713,15 @@ export default function DashboardPage() {
     const dueNum = parseInt(b.due_day)
     const isPast = now.getFullYear() > year || (now.getFullYear() === year && now.getMonth() > month) ||
       (now.getFullYear() === year && now.getMonth() === month && now.getDate() > dueNum + 5)
+    // Catch missed-prior-month overdue: if latest payment is older than 35 days, flag as overdue.
+    // Per audit 2026-05-16 — caught 4312 Bonham at 62 days late showing as 'Unpaid' not 'Overdue'.
+    const latestPaymentDate = allPayments
+      .filter(p => p.borrower_id === b.id)
+      .reduce((max, p) => p.payment_date > max ? p.payment_date : max, '')
+    if (latestPaymentDate) {
+      const daysSinceLastPayment = Math.floor((now.getTime() - new Date(latestPaymentDate).getTime()) / 86400000)
+      if (daysSinceLastPayment > 35) return { status: 'overdue', amount: null }
+    }
     return { status: isPast ? 'overdue' : 'unpaid', amount: null }
   }
 
@@ -995,11 +1010,11 @@ export default function DashboardPage() {
                 {label:'Monthly Payment',val:selectedBorrower.payment_amount,color:'#2e6da4'},
                 {label:'Due Day',val:selectedBorrower.due_day,color:'#1c2026'},
                 {label:'Escrow',val:selectedBorrower.escrow === 'taxes_and_insurance' ? 'Yes' : selectedBorrower.escrow || 'No',color:'#15803d'},
-                {label:'Current Balance',val:drillLoan ? fmt(drillLoan.current_balance) : '—',color:'#2e6da4'},
-                {label:'Interest Rate',val:drillLoan ? (drillLoan.rate < 1 ? (drillLoan.rate*100).toFixed(2)+'%' : drillLoan.rate.toFixed(2)+'%') : '—',color:'#b45309'},
-                {label:'Loan Term',val:drillLoan ? drillLoan.term_years+' yrs' : '—',color:'#1c2026'},
-                {label:'Payments Made',val:drillLoan ? drillLoan.payments_made : '—',color:'#15803d'},
-                {label:'Interest Paid',val:drillLoan ? fmt(drillLoan.total_interest_paid) : '—',color:'#b45309'},
+                {label:'Current Balance',val:drillLoan ? fmt(drillLoan.current_balance) : '…',color:'#2e6da4'},
+                {label:'Interest Rate',val:drillLoan ? (drillLoan.rate < 1 ? (drillLoan.rate*100).toFixed(2)+'%' : drillLoan.rate.toFixed(2)+'%') : '…',color:'#b45309'},
+                {label:'Loan Term',val:drillLoan ? drillLoan.term_years+' yrs' : '…',color:'#1c2026'},
+                {label:'Payments Made',val:drillLoan ? drillLoan.payments_made : '…',color:'#15803d'},
+                {label:'Interest Paid',val:drillLoan ? fmt(drillLoan.total_interest_paid) : '…',color:'#b45309'},
                 {label:'Insurance Expires',val:selectedBorrower.ins_expiry ? fmtDate(selectedBorrower.ins_expiry) : 'Unknown',color:selectedBorrower.ins_expiry && new Date(selectedBorrower.ins_expiry) < new Date() ? '#b91c1c' : '#15803d'},
               ].map((stat,i) => (
                 <div key={i} style={{...s.card,textAlign:'center'}}>
